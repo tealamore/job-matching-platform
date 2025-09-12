@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "== CI placeholder =="
-echo "Add your real build & test commands here."
-echo "Examples:"
-echo "  # Node"
-echo "  # npm ci && npm test"
-echo "  # Python"
-echo '  # python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt && pytest -q'
-echo "------------------------------------------"
+echo "== CI: root install & build (apps/web) =="
 
-# Succeed by default (until real tests are added)
-exit 0
+# Install once at the repo root using the root package-lock.json
+npm ci
+
+# Optional checks (won't fail if scripts don't exist)
+npm run lint --if-present
+npm run typecheck --if-present
+
+# Build the web app via root script proxy to apps/web
+npm run build
+
+echo "== CI ok =="
