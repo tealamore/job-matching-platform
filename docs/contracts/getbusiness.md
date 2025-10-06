@@ -20,7 +20,7 @@ Auth Cookie
 {
     "email": "string",
     "name": "string",
-    "phoneNumber": "string
+    "phoneNumber": "string"
     
 }
 ```
