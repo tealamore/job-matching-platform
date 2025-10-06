@@ -21,10 +21,10 @@ Auth Cookie
     "title": "string",
     "description": "string",
     "postedDate": "date",
-    "business_ID": "UUID"
+    "businessid": "UUID"
 
-    "Tags" : [{
-    "skillname": "string"
+    "tags" : [{
+    "skillName": "string"
     }]
   
     
