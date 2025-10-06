@@ -19,8 +19,9 @@ Auth Cookie
 ```json
 {
     "email": "string",
-    "Name": "string",
-    "Phone Number": "string
+    "name": "string",
+    "phoneNumber": "string",
+    "userType": "string"
 }
 ```
 
