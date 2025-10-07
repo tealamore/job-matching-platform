@@ -22,9 +22,10 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login").permitAll()
+                .requestMatchers("/auth/login").anonymous()
+                .requestMatchers("/auth/signup").anonymous()
                 .requestMatchers("/actuator/**").permitAll()
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
             )
             .addFilterBefore(new JwtAuthenticationFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
