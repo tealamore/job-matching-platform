@@ -43,7 +43,7 @@ public class SignupE2ETest {
         up.inheritIO();
         Process upProcess = up.start();
         if (upProcess.waitFor() != 0) throw new RuntimeException("Failed to start docker compose");
-        // Wait for DB to be ready
+
         boolean connected = false;
         int retries = 0;
         while (!connected && retries < 30) {
