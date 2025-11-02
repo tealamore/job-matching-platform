@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import jakarta.servlet.http.Cookie;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.UUID;
 
@@ -57,5 +58,30 @@ public class JwtServiceTest {
         assertEquals("/", cookie.getPath());
         assertEquals(24 * 60 * 60, cookie.getMaxAge());
     }
+
+    @Test
+    void testGetUsernameFromCookies() {
+      Cookie[] cookies = new Cookie[] {
+        new Cookie("someOtherCookie", "value"),
+        new Cookie("authToken", "tokenValue")
+      };
+
+      when(jwtUtil.getSubject("tokenValue")).thenReturn("username");
+
+      String username = jwtService.getUsernameFromCookies(cookies);
+
+      assertEquals("username", username);
+    }
+
+  @Test
+  void testGetUsernameFromCookies_throws_whenCookieNotFound() {
+    Cookie[] cookies = new Cookie[] {
+      new Cookie("someOtherCookie", "value"),
+      new Cookie("authTokens", "username")
+    };
+
+    assertThrows(UsernameNotFoundException.class,
+      () -> jwtService.getUsernameFromCookies(cookies));
+  }
 }
 

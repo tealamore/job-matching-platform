@@ -25,6 +25,7 @@ public class SecurityConfig {
                 .requestMatchers("/auth/login").anonymous()
                 .requestMatchers("/auth/signup").anonymous()
                 .requestMatchers("/actuator/**").permitAll()
+                .requestMatchers("/me").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(new JwtAuthenticationFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
