@@ -13,6 +13,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 
+import static com.FairMatch.FairMatch.service.JwtService.AUTH_COOKIE;
+
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
@@ -27,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                if ("authToken".equals(cookie.getName())) {
+                if (AUTH_COOKIE.equals(cookie.getName())) {
                     token = cookie.getValue();
                     break;
                 }
