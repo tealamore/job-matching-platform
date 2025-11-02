@@ -1,0 +1,9 @@
+package com.FairMatch.FairMatch.repository;
+
+import com.FairMatch.FairMatch.model.Jobs;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.UUID;
+
+public interface JobsRepository extends JpaRepository<Jobs, UUID> {
+}
