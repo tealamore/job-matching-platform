@@ -1,6 +1,7 @@
 // src/components/LoginPage.tsx
 "use client";
 import { useState } from "react";
+import axios from 'axios';
 
 type Role = "candidate" | "recruiter";
 
@@ -11,15 +12,19 @@ export default function LoginPage({ onLogin }: { onLogin: (role: Role, remember:
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
 
-  const validUsername = "admin";
-  const validPassword = "password123";
-
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === validUsername && password === validPassword) {
-      setError("");
-      onLogin(role, remember);
-    } else setError("Invalid username or password");
+    setError("");
+
+    try {
+      const response = await axios.post('http://localhost:8080/auth/login', {
+        email: username,
+        password
+      });
+      onLogin(response.data.role || role, response.data.remember || remember);
+    } catch (error: any) {
+      setError(error.response?.data?.message || "Invalid username or password");
+    }
   };
 
   return (

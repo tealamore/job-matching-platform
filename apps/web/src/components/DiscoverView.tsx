@@ -147,7 +147,7 @@ export default function DiscoverView({
             onSwipe={onSwipeJob}
             width="clamp(36ch, 42vw, 60ch)"
             controlsInside
-            showButtons={false}
+            showButtons={true}
             progressVariant="chip"
             emptyState={jobEmpty}
             renderItem={(job) => <JobCard job={job} />}
