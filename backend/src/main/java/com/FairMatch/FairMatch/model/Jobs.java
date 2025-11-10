@@ -28,7 +28,7 @@ public class Jobs {
   @Column(nullable = true)
   private Double salary;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "posted_by", nullable = false, unique = true)
   private User user;
 }
