@@ -1,8 +1,7 @@
 package com.FairMatch.FairMatch.controller;
 
-import com.FairMatch.FairMatch.dto.UserDto;
+import com.FairMatch.FairMatch.dto.UserResponse;
 import com.FairMatch.FairMatch.model.Jobs;
-import com.FairMatch.FairMatch.model.User;
 import com.FairMatch.FairMatch.service.JwtService;
 import com.FairMatch.FairMatch.service.MeService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +25,7 @@ public class MeController {
   }
 
   @GetMapping
-  public UserDto getMe(HttpServletRequest request) {
+  public UserResponse getMe(HttpServletRequest request) {
     String username = jwtService.getUsernameFromCookies(request.getCookies());
 
     return meService.getMe(username);

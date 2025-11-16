@@ -1,9 +1,6 @@
 package com.FairMatch.FairMatch.dto;
 
-import com.FairMatch.FairMatch.model.JobTitles;
-import com.FairMatch.FairMatch.model.Skills;
-import com.FairMatch.FairMatch.model.User;
-import com.FairMatch.FairMatch.model.UserType;
+import com.FairMatch.FairMatch.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserDto {
+public class UserResponse {
   private String name;
   private String email;
   private String phone;
@@ -27,12 +24,15 @@ public class UserDto {
   private UserType userType;
 
   @Builder.Default
-  private List<TitleDTO> desiredTitles = null;
+  private List<TitleResponse> desiredTitles = null;
 
   @Builder.Default
-  private List<SkillsDTO> skills = null;
+  private List<SkillsResponse> skills = null;
 
-  public UserDto(User user) {
+  @Builder.Default
+  private List<JobsResponse> jobs = null;
+
+  public UserResponse(User user) {
     if (user == null) {
       return;
     }
@@ -43,7 +43,23 @@ public class UserDto {
     this.userType = user.getUserType();
   }
 
-  public UserDto(User user, List<JobTitles> jobTitles, List<Skills> skills) {
+  public UserResponse(User user, List<Jobs> jobs) {
+    if (user == null) {
+      return;
+    }
+    this.name = user.getName();
+    this.email = user.getEmail();
+    this.phone = user.getPhone();
+    this.id = user.getId();
+    this.userType = user.getUserType();
+
+    jobs.forEach(it -> it.setJobJobSeekers(null));
+    jobs.forEach(it -> it.setUser(null));
+
+    this.jobs = jobs.stream().map(JobsResponse::new).toList();
+  }
+
+  public UserResponse(User user, List<JobTitles> jobTitles, List<Skills> skills) {
     if (user == null) {
       return;
     }
@@ -57,7 +73,7 @@ public class UserDto {
       this.desiredTitles = new ArrayList<>();
     } else {
       this.desiredTitles = jobTitles.stream()
-        .map(TitleDTO::new)
+        .map(TitleResponse::new)
         .toList();
     }
 
@@ -65,7 +81,7 @@ public class UserDto {
       this.skills = new ArrayList<>();
     } else {
       this.skills = skills.stream()
-        .map(SkillsDTO::new)
+        .map(SkillsResponse::new)
         .toList();
     }
   }

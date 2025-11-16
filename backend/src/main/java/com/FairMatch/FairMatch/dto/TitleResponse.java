@@ -12,10 +12,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TitleDTO {
+public class TitleResponse {
   private UUID id;
   private String title;
-  public TitleDTO(JobTitles jobTitle) {
+  public TitleResponse(JobTitles jobTitle) {
       this.title = jobTitle.getTitle();
       this.id = jobTitle.getId();
   }

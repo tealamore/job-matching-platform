@@ -1,6 +1,6 @@
 package com.FairMatch.FairMatch.e2e;
 
-import com.FairMatch.FairMatch.dto.JobsDTO;
+import com.FairMatch.FairMatch.dto.JobsResponse;
 import com.FairMatch.FairMatch.model.*;
 import com.FairMatch.FairMatch.repository.*;
 import org.junit.jupiter.api.*;
@@ -37,6 +37,11 @@ public class JobsE2ETest extends E2ETest {
   @Autowired
   private JobTagsRepository jobTagsRepository;
   @Autowired
+  private SkillsRepository skillsRepository;
+  @Autowired
+  private JobTitlesRepository jobTitlesRepository;
+
+  @Autowired
   private BCryptPasswordEncoder passwordEncoder;
 
   User employer;
@@ -57,6 +62,8 @@ public class JobsE2ETest extends E2ETest {
 
   @BeforeEach
   void setUp() {
+    jobTitlesRepository.deleteAll();
+    skillsRepository.deleteAll();
     jobJobSeekerRepository.deleteAll();
     jobTagsRepository.deleteAll();
     jobsRepository.deleteAll();
@@ -96,6 +103,8 @@ public class JobsE2ETest extends E2ETest {
 
   @AfterEach
   void tearDown() {
+    jobTitlesRepository.deleteAll();
+    skillsRepository.deleteAll();
     jobJobSeekerRepository.deleteAll();
     jobTagsRepository.deleteAll();
     jobsRepository.deleteAll();
@@ -318,9 +327,9 @@ public class JobsE2ETest extends E2ETest {
     headers.set("Cookie", "authToken=" + authCookie);
     HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
-    ResponseEntity<JobsDTO> response = restTemplate.exchange(jobUrl, HttpMethod.GET, requestEntity, JobsDTO.class);
+    ResponseEntity<JobsResponse> response = restTemplate.exchange(jobUrl, HttpMethod.GET, requestEntity, JobsResponse.class);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(response.getBody(), new JobsDTO(job));
+    assertEquals(response.getBody(), new JobsResponse(job));
   }
 }

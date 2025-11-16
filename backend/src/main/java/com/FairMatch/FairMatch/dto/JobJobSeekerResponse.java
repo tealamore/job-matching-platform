@@ -11,15 +11,15 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class JobJobSeekerDto {
+public class JobJobSeekerResponse {
     private String appliedDate;
-    private UserDto user;
+    private UserResponse user;
     private UUID jobsId;
     private String status;
 
-    public JobJobSeekerDto(com.FairMatch.FairMatch.model.JobJobSeeker jobJobSeeker) {
+    public JobJobSeekerResponse(com.FairMatch.FairMatch.model.JobJobSeeker jobJobSeeker) {
         this.appliedDate = jobJobSeeker.getAppliedDate().toString();
-        this.user = new UserDto(jobJobSeeker.getUser());
+        this.user = new UserResponse(jobJobSeeker.getUser());
         this.jobsId = jobJobSeeker.getJobs().getId();
         this.status = jobJobSeeker.getStatus().name();
     }

@@ -14,30 +14,33 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class JobsDTO {
+public class JobsResponse {
     private String title;
     private String description;
     private Double salary;
     private UUID id;
 
-    private UserDto postedBy;
+    private UserResponse postedBy;
 
-    private List<JobJobSeekerDto> jobJobSeekers;
+    private List<JobJobSeekerResponse> jobJobSeekers;
 
-    public JobsDTO(Jobs jobs) {
+    public JobsResponse(Jobs jobs) {
       this.title = jobs.getTitle();
       this.description = jobs.getDescription();
       this.salary = jobs.getSalary();
       this.id = jobs.getId();
-      this.postedBy = new UserDto(jobs.getUser());
+
+      if (jobs.getUser() == null) {
+        this.postedBy = null;
+      } else {
+        this.postedBy = new UserResponse(jobs.getUser());
+      }
 
       if (jobs.getJobJobSeekers() == null) {
         this.jobJobSeekers = Collections.emptyList();
-        return;
+      } else {
+        this.jobJobSeekers = jobs.getJobJobSeekers().stream().map(JobJobSeekerResponse::new).toList();
       }
-
-      this.jobJobSeekers = jobs.getJobJobSeekers().stream().map(JobJobSeekerDto::new).toList();
-
     }
 
 }

@@ -1,7 +1,11 @@
 package com.FairMatch.FairMatch.e2e;
 
+import com.FairMatch.FairMatch.dto.JobsResponse;
 import com.FairMatch.FairMatch.dto.UserResponse;
-import com.FairMatch.FairMatch.model.*;
+import com.FairMatch.FairMatch.model.Auth;
+import com.FairMatch.FairMatch.model.Jobs;
+import com.FairMatch.FairMatch.model.User;
+import com.FairMatch.FairMatch.model.UserType;
 import com.FairMatch.FairMatch.repository.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +16,12 @@ import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class MeE2ETest extends E2ETest {
+public class BusinessE2ETest extends E2ETest {
   @LocalServerPort
   private String port;
 
@@ -31,11 +36,11 @@ public class MeE2ETest extends E2ETest {
   @Autowired
   private JobJobSeekerRepository jobJobSeekerRepository;
   @Autowired
+  private JobTagsRepository jobTagsRepository;
+  @Autowired
   private SkillsRepository skillsRepository;
   @Autowired
   private JobTitlesRepository jobTitlesRepository;
-  @Autowired
-  private JobTagsRepository jobTagsRepository;
 
   @Autowired
   private BCryptPasswordEncoder passwordEncoder;
@@ -109,35 +114,30 @@ public class MeE2ETest extends E2ETest {
   }
 
   @Test
-  void getMe_happyPath_returnsUser_forEmployer() {
-    String meUrl = "http://localhost:" + port + "/me";
-
+  void testGetById_businessUser_success() {
     String authCookie = getAuthToken(port, employerEmail, restTemplate);
 
-    Skills skill = Skills.builder()
-      .skillName("Java")
-      .user(employer)
-      .build();
-    skillsRepository.saveAndFlush(skill);
-
-    JobTitles jobTitle = JobTitles.builder()
+    Jobs jobs = Jobs.builder()
       .title("Software Engineer")
+      .description("Develop software applications.")
+      .salary(12000.0)
       .user(employer)
       .build();
-    jobTitlesRepository.saveAndFlush(jobTitle);
+    jobsRepository.saveAndFlush(jobs);
+
+    String url = "http://localhost:" + port + "/business/" + employer.getId().toString();
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.set("Cookie", "authToken=" + authCookie);
     HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
-    ResponseEntity<UserResponse> response = restTemplate.exchange(meUrl, HttpMethod.GET, requestEntity, UserResponse.class);
+    ResponseEntity<UserResponse> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, UserResponse.class);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
 
     UserResponse returnedUser = response.getBody();
-
-    assertNotNull(returnedUser);
 
     assertEquals(employer.getId(), returnedUser.getId());
     assertEquals(employer.getName(), returnedUser.getName());
@@ -145,56 +145,34 @@ public class MeE2ETest extends E2ETest {
     assertEquals(employer.getPhone(), returnedUser.getPhone());
     assertEquals(employer.getUserType(), returnedUser.getUserType());
 
-    assertNull(returnedUser.getDesiredTitles());
-    assertNull(returnedUser.getSkills());
+    assertEquals(1, returnedUser.getJobs().size());
+
+    JobsResponse jobsResponse = returnedUser.getJobs().get(0);
+
+    assertEquals(jobs.getTitle(), jobsResponse.getTitle());
+    assertEquals(jobs.getId(), jobsResponse.getId());
+    assertEquals(jobs.getDescription(), jobsResponse.getDescription());
+    assertEquals(jobs.getSalary(), jobsResponse.getSalary());
+    assertThat(jobsResponse.getJobJobSeekers()).isEmpty();
+    assertNull(jobsResponse.getPostedBy());
   }
 
   @Test
-  void getMe_happyPath_returnsUser_forApplicant() {
-    String meUrl = "http://localhost:" + port + "/me";
+  void testGetById_applicantUser_badRequest() {
+    String authCookie = getAuthToken(port, employerEmail, restTemplate);
 
-    String authCookie = getAuthToken(port, applicantEmail, restTemplate);
-
-    Skills skill = Skills.builder()
-      .skillName("Java")
-      .user(applicant)
-      .build();
-    skillsRepository.saveAndFlush(skill);
-
-    JobTitles jobTitle = JobTitles.builder()
-      .title("Software Engineer")
-      .user(applicant)
-      .build();
-    jobTitlesRepository.saveAndFlush(jobTitle);
+    String url = "http://localhost:" + port + "/business/" + applicant.getId().toString();
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.set("Cookie", "authToken=" + authCookie);
     HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
-    ResponseEntity<UserResponse> response = restTemplate.exchange(meUrl, HttpMethod.GET, requestEntity, UserResponse.class);
+    ResponseEntity<JobsResponse> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, JobsResponse.class);
 
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-
-    UserResponse returnedUser = response.getBody();
-
-    assertNotNull(returnedUser);
-
-    assertEquals(applicant.getId(), returnedUser.getId());
-    assertEquals(applicant.getName(), returnedUser.getName());
-    assertEquals(applicant.getEmail(), returnedUser.getEmail());
-    assertEquals(applicant.getPhone(), returnedUser.getPhone());
-    assertEquals(applicant.getUserType(), returnedUser.getUserType());
-
-    assertEquals(1, returnedUser.getDesiredTitles().size());
-    assertEquals(1, returnedUser.getSkills().size());
-
-    assertEquals(jobTitle.getTitle(), returnedUser.getDesiredTitles().get(0).getTitle());
-    assertEquals(jobTitle.getId(), returnedUser.getDesiredTitles().get(0).getId());
-
-    assertEquals(skill.getSkillName(), returnedUser.getSkills().get(0).getSkillName());
-    assertEquals(skill.getId(), returnedUser.getSkills().get(0).getId());
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
+
 
 
 }
