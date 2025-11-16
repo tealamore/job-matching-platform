@@ -29,4 +29,6 @@ public interface JobsRepository extends JpaRepository<Jobs, UUID> {
          WHERE jjs.user.id = :applicantId
 """)
   List<Jobs> findAllByJobJobSeekers_User_Id(UUID applicantId);
+
+  List<Jobs> findAllByTitleIn(List<String> titles);
 }

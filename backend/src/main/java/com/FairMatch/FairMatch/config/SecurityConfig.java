@@ -29,6 +29,8 @@ public class SecurityConfig {
                 .requestMatchers("/me/**").authenticated()
                 .requestMatchers("/jobs").authenticated()
                 .requestMatchers("/jobs/**").authenticated()
+                .requestMatchers("/business").authenticated()
+                .requestMatchers("/business/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(new JwtAuthenticationFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
