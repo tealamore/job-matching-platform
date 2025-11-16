@@ -4,6 +4,8 @@ import com.FairMatch.FairMatch.model.Auth;
 import com.FairMatch.FairMatch.model.User;
 import com.FairMatch.FairMatch.model.UserType;
 import com.FairMatch.FairMatch.repository.AuthRepository;
+import com.FairMatch.FairMatch.repository.JobJobSeekerRepository;
+import com.FairMatch.FairMatch.repository.JobsRepository;
 import com.FairMatch.FairMatch.repository.UserRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -26,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class SignupE2ETest {
+public class SignupE2ETest extends E2ETest {
     @LocalServerPort
     private int port;
 
@@ -36,46 +38,35 @@ public class SignupE2ETest {
     private UserRepository userRepository;
     @Autowired
     private AuthRepository authRepository;
+    @Autowired
+    private JobsRepository jobsRepository;
+    @Autowired
+    private JobJobSeekerRepository jobJobSeekerRepository;
 
     @BeforeAll
-    static void startDockerCompose() throws Exception {
-        ProcessBuilder up = new ProcessBuilder("docker", "compose", "up", "-d");
-        up.inheritIO();
-        Process upProcess = up.start();
-        if (upProcess.waitFor() != 0) throw new RuntimeException("Failed to start docker compose");
-
-        boolean connected = false;
-        int retries = 0;
-        while (!connected && retries < 30) {
-            try (Connection conn = DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/mydatabase", "myuser", "secret")) {
-                connected = true;
-            } catch (SQLException e) {
-                Thread.sleep(2000);
-                retries++;
-            }
-        }
-        if (!connected) throw new RuntimeException("Database did not become ready in time");
+    static void beforeAll() throws Exception {
+        startDockerCompose();
     }
 
     @AfterAll
-    static void stopDockerCompose() throws Exception {
-        ProcessBuilder down = new ProcessBuilder("docker", "compose", "down");
-        down.inheritIO();
-        Process downProcess = down.start();
-        downProcess.waitFor();
+    static void afterAll() throws Exception {
+        stopDockerCompose();
     }
 
     @BeforeEach
     void setUp() {
-        authRepository.deleteAll();
-        userRepository.deleteAll();
+      jobJobSeekerRepository.deleteAll();
+      jobsRepository.deleteAll();
+      authRepository.deleteAll();
+      userRepository.deleteAll();
     }
 
     @AfterEach
     void tearDown() {
-        authRepository.deleteAll();
-        userRepository.deleteAll();
+      jobJobSeekerRepository.deleteAll();
+      jobsRepository.deleteAll();
+      authRepository.deleteAll();
+      userRepository.deleteAll();
     }
 
     @Test

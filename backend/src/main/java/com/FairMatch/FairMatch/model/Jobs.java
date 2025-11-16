@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -25,10 +27,22 @@ public class Jobs {
   @Column(nullable = false)
   private String description;
 
-  @Column(nullable = true)
+  @Column
   private Double salary;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "posted_by", nullable = false, unique = true)
+  @JoinColumn(name = "posted_by", nullable = false)
   private User user;
+
+  @OneToMany(mappedBy = "jobs", fetch = FetchType.LAZY)
+  private List<JobJobSeeker> jobJobSeekers = List.of();
+
+  public Jobs(UUID id, String title, String description, Double salary, User user, JobJobSeeker jobJobSeeker) {
+    this.id = id;
+    this.title = title;
+    this.description = description;
+    this.salary = salary;
+    this.user = user;
+    this.jobJobSeekers = List.of(jobJobSeeker);
+  }
 }

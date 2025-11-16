@@ -1,9 +1,8 @@
 package com.FairMatch.FairMatch.service;
 
-import com.FairMatch.FairMatch.model.JobJobSeeker;
 import com.FairMatch.FairMatch.model.Jobs;
 import com.FairMatch.FairMatch.model.User;
-import com.FairMatch.FairMatch.repository.JobJobSeekerRepository;
+import com.FairMatch.FairMatch.model.UserType;
 import com.FairMatch.FairMatch.repository.JobsRepository;
 import com.FairMatch.FairMatch.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,30 +15,26 @@ import java.util.List;
 public class MeService {
   private final UserRepository userRepository;
   private final JobsRepository jobsRepository;
-  private final JobJobSeekerRepository jobJobSeekerRepository;
 
   @Autowired
-  public MeService(UserRepository userRepository, JobsRepository jobsRepository, JobJobSeekerRepository jobJobSeekerRepository) {
+  public MeService(UserRepository userRepository, JobsRepository jobsRepository) {
     this.userRepository = userRepository;
     this.jobsRepository = jobsRepository;
-    this.jobJobSeekerRepository = jobJobSeekerRepository;
   }
 
   public User getMe(String username) {
-    User user = userRepository.findByEmail(username)
+    return userRepository.findByEmail(username)
       .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-    user.setId(null);
-
-    return user;
   }
 
   public List<Jobs> getMyJobs(String username) {
     User user = userRepository.findByEmail(username)
       .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-    return jobsRepository.findAllByUser(user);
+    if (user.getUserType() == UserType.JOB_SEEKER) {
+      return jobsRepository.findAllByJobJobSeekers_User_Id(user.getId());
+    }
 
-//    return jobJobSeekerRepository.findAllByJobsIn(jobs);
+    return jobsRepository.findAllByPosterWithApplicants(user.getId());
   }
 }
