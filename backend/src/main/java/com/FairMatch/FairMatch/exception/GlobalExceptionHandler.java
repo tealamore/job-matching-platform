@@ -12,8 +12,8 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    @ExceptionHandler({ MethodArgumentNotValidException.class, BadRequestException.class })
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(Exception ex) {
       return ResponseEntity.badRequest().build();
     }
 
