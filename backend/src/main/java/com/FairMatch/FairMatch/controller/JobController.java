@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -46,5 +47,12 @@ public class JobController {
     System.out.println(jobs);
 
     return jobs;
+  }
+
+  @GetMapping("/feed")
+  public List<JobsResponse> getJobFeed(HttpServletRequest request) {
+    String username = jwtService.getUsernameFromCookies(request.getCookies());
+
+    return jobService.getJobFeed(username);
   }
 }

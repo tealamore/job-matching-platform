@@ -5,18 +5,13 @@ import com.FairMatch.FairMatch.dto.InteractJobRequest;
 import com.FairMatch.FairMatch.dto.JobsResponse;
 import com.FairMatch.FairMatch.exception.BadRequestException;
 import com.FairMatch.FairMatch.model.*;
-import com.FairMatch.FairMatch.repository.JobJobSeekerRepository;
-import com.FairMatch.FairMatch.repository.JobTagsRepository;
-import com.FairMatch.FairMatch.repository.JobsRepository;
-import com.FairMatch.FairMatch.repository.UserRepository;
+import com.FairMatch.FairMatch.repository.*;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class JobService {
@@ -24,14 +19,21 @@ public class JobService {
   private final JobsRepository jobsRepository;
   private final JobTagsRepository jobTagsRepository;
   private final JobJobSeekerRepository jobJobSeekerRepository;
+  private final JobTitlesRepository jobTitlesRepository;
+  private final SkillsRepository skillsRepository;
 
   public JobService(JobsRepository jobsRepository,
                     JobTagsRepository jobTagsRepository,
-                    UserRepository userRepository, JobJobSeekerRepository jobJobSeekerRepository) {
+                    UserRepository userRepository,
+                    JobJobSeekerRepository jobJobSeekerRepository,
+                    JobTitlesRepository jobTitlesRepository,
+                    SkillsRepository skillsRepository) {
     this.jobsRepository = jobsRepository;
     this.userRepository = userRepository;
     this.jobTagsRepository = jobTagsRepository;
     this.jobJobSeekerRepository = jobJobSeekerRepository;
+    this.jobTitlesRepository = jobTitlesRepository;
+    this.skillsRepository = skillsRepository;
   }
 
   public Jobs createJob(CreateJobRequest createJobRequest, String username) {
@@ -95,5 +97,46 @@ public class JobService {
       .orElseThrow(BadRequestException::new);
 
     return new JobsResponse(jobs);
+  }
+
+  public List<JobsResponse> getJobFeed(String username) {
+    User user = userRepository.findByEmail(username)
+      .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+    if (!user.getUserType().equals(UserType.JOB_SEEKER)) {
+      throw new BadRequestException();
+    }
+
+    List<String> desiredTitles = jobTitlesRepository.findByUserId(user.getId())
+      .stream()
+      .map(JobTitles::getTitle)
+      .toList();
+
+    List<Jobs> jobsByTitle = jobsRepository.findAllByTitleIn(desiredTitles);
+
+    List<String> skills = skillsRepository.findByUserId(user.getId())
+      .stream()
+      .map(Skills::getSkillName)
+      .toList();
+
+    List<Jobs> jobsBySkills = new ArrayList<>(jobTagsRepository.findAllBySkillNameIn(skills)
+      .stream()
+      .map(JobTags::getJobs)
+      .toList());
+
+    List<UUID> alreadyApplied = jobJobSeekerRepository.findAllByUser(user)
+      .stream()
+      .map(JobJobSeeker::getJobs)
+      .map(Jobs::getId)
+      .toList();
+
+    Set<Jobs> uniqueJobs = new HashSet<>(jobsByTitle);
+    uniqueJobs.addAll(jobsBySkills);
+    uniqueJobs.removeIf(it -> alreadyApplied.contains(it.getId()));
+    uniqueJobs.forEach(it -> it.setJobJobSeekers(Collections.emptyList()));
+
+    return uniqueJobs.stream()
+      .map(JobsResponse::new)
+      .toList();
   }
 }

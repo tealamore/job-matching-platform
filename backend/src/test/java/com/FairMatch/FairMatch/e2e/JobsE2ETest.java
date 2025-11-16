@@ -12,11 +12,12 @@ import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -331,5 +332,135 @@ public class JobsE2ETest extends E2ETest {
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(response.getBody(), new JobsResponse(job));
+  }
+
+  @Test
+  void getJobFeed_happyPath_returnsRecommendedJobs() {
+    JobTitles jt = JobTitles.builder()
+      .title("Developer")
+      .user(applicant)
+      .build();
+    jobTitlesRepository.saveAndFlush(jt);
+
+    Skills skill = Skills.builder()
+      .skillName("Java")
+      .user(applicant)
+      .build();
+    skillsRepository.saveAndFlush(skill);
+
+    Jobs job1 = Jobs.builder()
+      .title("Some other title")
+      .description("Job 1")
+      .salary(10000.0)
+      .user(employer)
+      .build();
+    Jobs job2 = Jobs.builder()
+      .title("Another title")
+      .description("Job 2")
+      .salary(12000.0)
+      .user(employer)
+      .build();
+    jobsRepository.saveAll(List.of(job1, job2));
+
+    JobTags tag1 = JobTags.builder()
+      .skillName("Java")
+      .jobs(job1)
+      .build();
+    JobTags tag2 = JobTags.builder()
+      .skillName("Java")
+      .jobs(job2)
+      .build();
+    jobTagsRepository.saveAll(List.of(tag1, tag2));
+
+    String authCookie = getAuthToken(port, applicantEmail, restTemplate);
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("Cookie", "authToken=" + authCookie);
+
+    HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+    String url = "http://localhost:" + port + "/jobs/feed";
+
+    ResponseEntity<JobsResponse[]> response = restTemplate.exchange(
+      url,
+      HttpMethod.GET,
+      requestEntity,
+      JobsResponse[].class
+    );
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+
+    List<UUID> returnedIds = Arrays.stream(response.getBody())
+      .map(JobsResponse::getId)
+      .toList();
+
+    assertTrue(returnedIds.contains(job1.getId()));
+    assertTrue(returnedIds.contains(job2.getId()));
+  }
+
+  @Test
+  void getJobFeed_happyPath_returnsRecommendedJobs_filtersItems() {
+    JobTitles jt = JobTitles.builder()
+      .title("Developer")
+      .user(applicant)
+      .build();
+    jobTitlesRepository.saveAndFlush(jt);
+
+    Skills skill = Skills.builder()
+      .skillName("Java")
+      .user(applicant)
+      .build();
+    skillsRepository.saveAndFlush(skill);
+
+    Jobs job1 = Jobs.builder()
+      .title("Some other title")
+      .description("Job 1")
+      .salary(10000.0)
+      .user(employer)
+      .build();
+    Jobs job2 = Jobs.builder()
+      .title("Another title")
+      .description("Job 2")
+      .salary(12000.0)
+      .user(employer)
+      .build();
+    jobsRepository.saveAll(List.of(job1, job2));
+
+    JobTags tag1 = JobTags.builder()
+      .skillName("Java")
+      .jobs(job1)
+      .build();
+    JobTags tag2 = JobTags.builder()
+      .skillName("Java")
+      .jobs(job2)
+      .build();
+    jobTagsRepository.saveAll(List.of(tag1, tag2));
+
+    String authCookie = getAuthToken(port, applicantEmail, restTemplate);
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("Cookie", "authToken=" + authCookie);
+
+    HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+    String url = "http://localhost:" + port + "/jobs/feed";
+
+    ResponseEntity<JobsResponse[]> response = restTemplate.exchange(
+      url,
+      HttpMethod.GET,
+      requestEntity,
+      JobsResponse[].class
+    );
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+
+    List<UUID> returnedIds = Arrays.stream(response.getBody())
+      .map(JobsResponse::getId)
+      .toList();
+
+    assertTrue(returnedIds.contains(job1.getId()));
+    assertTrue(returnedIds.contains(job2.getId()));
   }
 }

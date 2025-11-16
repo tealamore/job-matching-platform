@@ -2,25 +2,24 @@ package com.FairMatch.FairMatch.service;
 
 import com.FairMatch.FairMatch.dto.CreateJobRequest;
 import com.FairMatch.FairMatch.dto.InteractJobRequest;
+import com.FairMatch.FairMatch.dto.JobsResponse;
 import com.FairMatch.FairMatch.exception.BadRequestException;
-import com.FairMatch.FairMatch.model.Jobs;
-import com.FairMatch.FairMatch.model.SwipeStatus;
-import com.FairMatch.FairMatch.model.User;
-import com.FairMatch.FairMatch.model.UserType;
-import com.FairMatch.FairMatch.repository.JobJobSeekerRepository;
-import com.FairMatch.FairMatch.repository.JobTagsRepository;
-import com.FairMatch.FairMatch.repository.JobsRepository;
-import com.FairMatch.FairMatch.repository.UserRepository;
+import com.FairMatch.FairMatch.model.*;
+import com.FairMatch.FairMatch.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
 import static java.util.List.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static java.util.Optional.empty;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class JobServiceTest {
@@ -28,6 +27,8 @@ public class JobServiceTest {
   private JobsRepository jobsRepository;
   private JobTagsRepository jobTagsRepository;
   private JobJobSeekerRepository jobJobSeekerRepository;
+  private SkillsRepository skillsRepository;
+  private JobTitlesRepository jobTitlesRepository;
 
   private JobService jobService;
 
@@ -39,8 +40,13 @@ public class JobServiceTest {
     jobsRepository = mock(JobsRepository.class);
     jobTagsRepository = mock(JobTagsRepository.class);
     jobJobSeekerRepository = mock(JobJobSeekerRepository.class);
+    skillsRepository = mock(SkillsRepository.class);
+    jobTitlesRepository = mock(JobTitlesRepository.class);
 
-    jobService = new JobService(jobsRepository, jobTagsRepository, userRepository, jobJobSeekerRepository);
+
+    jobService = new JobService(jobsRepository, jobTagsRepository,
+      userRepository, jobJobSeekerRepository,
+      jobTitlesRepository, skillsRepository);
 
     mockUser = User.builder()
       .id(UUID.randomUUID())
@@ -52,7 +58,7 @@ public class JobServiceTest {
   void testCreateJob_throws_ifUserNotFound() {
     String email = "email";
     when(userRepository.findByEmail(email))
-      .thenReturn(Optional.empty());
+      .thenReturn(empty());
 
     CreateJobRequest createJobRequest = new CreateJobRequest();
 
@@ -101,7 +107,7 @@ public class JobServiceTest {
   void testInteractJob_throws_ifUserNotFound() {
     String email = "email";
     when(userRepository.findByEmail(email))
-      .thenReturn(Optional.empty());
+      .thenReturn(empty());
 
     InteractJobRequest interactJobRequest = new InteractJobRequest();
 
@@ -172,5 +178,97 @@ public class JobServiceTest {
       .thenReturn(Optional.of(new Jobs()));
 
     jobService.getJobById(UUID.randomUUID());
+  }
+
+  @Test
+  void testGetJobFeed_HappyPath() {
+    mockUser.setUserType(UserType.JOB_SEEKER);
+
+    JobTitles jt = new JobTitles();
+    jt.setTitle("Developer");
+    jt.setUser(mockUser);
+    when(userRepository.findByEmail("seeker@example.com")).thenReturn(Optional.of(mockUser));
+    when(jobTitlesRepository.findByUserId(mockUser.getId())).thenReturn(List.of(jt));
+
+    Skills skill = new Skills();
+    skill.setSkillName("Java");
+    skill.setUser(mockUser);
+    when(skillsRepository.findByUserId(mockUser.getId())).thenReturn(List.of(skill));
+
+    Jobs job1 = new Jobs();
+    job1.setId(UUID.randomUUID());
+    Jobs job2 = new Jobs();
+    job2.setId(UUID.randomUUID());
+
+    JobTags tag1 = new JobTags();
+    tag1.setSkillName("Java");
+    tag1.setJobs(job1);
+    JobTags tag2 = new JobTags();
+    tag2.setSkillName("Java");
+    tag2.setJobs(job2);
+
+    when(jobTagsRepository.findAllBySkillNameIn(List.of("Java"))).thenReturn(List.of(tag1, tag2));
+    when(jobsRepository.findAllByTitleIn(List.of("Developer"))).thenReturn(List.of(job1));
+    when(jobJobSeekerRepository.findAllByUser(mockUser)).thenReturn(emptyList());
+
+    List<JobsResponse> result = jobService.getJobFeed("seeker@example.com");
+
+    assertEquals(2, result.size());
+    assertTrue(result.stream().anyMatch(r -> r.getId().equals(job1.getId())));
+    assertTrue(result.stream().anyMatch(r -> r.getId().equals(job2.getId())));
+  }
+
+  @Test
+  void testGetJobFeed_UserNotFound() {
+    when(userRepository.findByEmail("unknown@example.com")).thenReturn(empty());
+
+    assertThrows(UsernameNotFoundException.class,
+      () -> jobService.getJobFeed("unknown@example.com"));
+  }
+
+  @Test
+  void testGetJobFeed_UserNotJobSeeker() {
+    mockUser.setUserType(UserType.BUSINESS);
+
+    when(userRepository.findByEmail("employer@example.com")).thenReturn(Optional.of(mockUser));
+
+    assertThrows(BadRequestException.class,
+      () -> jobService.getJobFeed("employer@example.com"));
+  }
+
+  @Test
+  void testGetJobFeed_AlreadyAppliedExcluded() {
+    mockUser.setUserType(UserType.JOB_SEEKER);
+
+    when(userRepository.findByEmail("seeker@example.com")).thenReturn(Optional.of(mockUser));
+
+    JobTitles jt = new JobTitles();
+    jt.setTitle("Developer");
+    jt.setUser(mockUser);
+    when(jobTitlesRepository.findByUserId(mockUser.getId())).thenReturn(List.of(jt));
+
+    Skills skill = new Skills();
+    skill.setSkillName("Java");
+    skill.setUser(mockUser);
+    when(skillsRepository.findByUserId(mockUser.getId())).thenReturn(List.of(skill));
+
+    Jobs job1 = new Jobs();
+    job1.setId(UUID.randomUUID());
+    Jobs job2 = new Jobs();
+    job2.setId(UUID.randomUUID());
+
+    JobTags tag1 = new JobTags();
+    tag1.setSkillName("Java");
+    tag1.setJobs(job1);
+    when(jobTagsRepository.findAllBySkillNameIn(List.of("Java"))).thenReturn(List.of(tag1));
+    when(jobsRepository.findAllByTitleIn(List.of("Developer"))).thenReturn(List.of(job2));
+
+    JobJobSeeker applied = new JobJobSeeker();
+    applied.setJobs(job1);
+    when(jobJobSeekerRepository.findAllByUser(mockUser)).thenReturn(List.of(applied));
+
+    List<JobsResponse> result = jobService.getJobFeed("seeker@example.com");
+    assertEquals(1, result.size());
+    assertTrue(result.stream().anyMatch(r -> r.getId().equals(job2.getId())));
   }
 }
