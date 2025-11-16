@@ -29,15 +29,18 @@ public class JobsResponse {
       this.description = jobs.getDescription();
       this.salary = jobs.getSalary();
       this.id = jobs.getId();
-      this.postedBy = new UserResponse(jobs.getUser());
+
+      if (jobs.getUser() == null) {
+        this.postedBy = null;
+      } else {
+        this.postedBy = new UserResponse(jobs.getUser());
+      }
 
       if (jobs.getJobJobSeekers() == null) {
         this.jobJobSeekers = Collections.emptyList();
-        return;
+      } else {
+        this.jobJobSeekers = jobs.getJobJobSeekers().stream().map(JobJobSeekerResponse::new).toList();
       }
-
-      this.jobJobSeekers = jobs.getJobJobSeekers().stream().map(JobJobSeekerResponse::new).toList();
-
     }
 
 }

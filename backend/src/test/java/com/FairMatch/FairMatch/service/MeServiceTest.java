@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -44,7 +45,7 @@ public class MeServiceTest {
     String username = "username";
 
     when(userRepository.findByEmail(username))
-      .thenReturn(Optional.of(mockUser));
+      .thenReturn(of(mockUser));
 
     UserResponse user = meService.getMe(username);
 
@@ -68,7 +69,7 @@ public class MeServiceTest {
       .build();
 
     when(userRepository.findByEmail(username))
-      .thenReturn(Optional.of(mockUser));
+      .thenReturn(of(mockUser));
     when(skillsRepository.findByUserId(mockUser.getId()))
       .thenReturn(List.of(skill));
     when(jobTitlesRepository.findByUserId(mockUser.getId()))
@@ -92,7 +93,7 @@ public class MeServiceTest {
   void testGetMyJobs_employer() {
     String username = "username";
     when(userRepository.findByEmail(username))
-      .thenReturn(Optional.of(mockUser));
+      .thenReturn(of(mockUser));
     when(jobsRepository.findAllByPosterWithApplicants(mockUser.getId()))
       .thenReturn(emptyList());
 
@@ -107,7 +108,7 @@ public class MeServiceTest {
     String username = "username";
     mockUser.setUserType(UserType.JOB_SEEKER);
     when(userRepository.findByEmail(username))
-      .thenReturn(Optional.of(mockUser));
+      .thenReturn(of(mockUser));
     when(jobsRepository.findAllByJobJobSeekers_User_Id(mockUser.getId()))
       .thenReturn(emptyList());
 
@@ -127,5 +128,25 @@ public class MeServiceTest {
       () -> meService.getMyJobs(username));
 
     verifyNoInteractions(jobsRepository);
+  }
+
+  @Test
+  void testGetById_throwsWhenUserNotFound() {
+    UUID id = UUID.randomUUID();
+    when(userRepository.findById(id))
+      .thenReturn(empty());
+
+    assertThrows(UsernameNotFoundException.class, () -> meService.getById(id));
+  }
+
+  @Test
+  void testGetById_happyPath() {
+    UUID id = UUID.randomUUID();
+    when(userRepository.findById(id))
+      .thenReturn(of(mockUser));
+
+    UserResponse response = meService.getById(id);
+
+    assertEquals(new UserResponse(mockUser, emptyList()), response);
   }
 }

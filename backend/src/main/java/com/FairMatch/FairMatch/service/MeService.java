@@ -1,6 +1,7 @@
 package com.FairMatch.FairMatch.service;
 
 import com.FairMatch.FairMatch.dto.UserResponse;
+import com.FairMatch.FairMatch.exception.BadRequestException;
 import com.FairMatch.FairMatch.model.*;
 import com.FairMatch.FairMatch.repository.JobTitlesRepository;
 import com.FairMatch.FairMatch.repository.JobsRepository;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class MeService {
@@ -49,5 +51,18 @@ public class MeService {
     }
 
     return jobsRepository.findAllByPosterWithApplicants(user.getId());
+  }
+
+  public UserResponse getById(UUID id) {
+    User user = userRepository.findById(id)
+     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+    if (user.getUserType() == UserType.JOB_SEEKER) {
+      throw new BadRequestException();
+    }
+
+    List<Jobs> jobs = jobsRepository.findAllByUser(user);
+
+    return new UserResponse(user, jobs);
   }
 }
