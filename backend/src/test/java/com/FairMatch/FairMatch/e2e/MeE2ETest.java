@@ -34,6 +34,8 @@ public class MeE2ETest extends E2ETest {
   private SkillsRepository skillsRepository;
   @Autowired
   private JobTitlesRepository jobTitlesRepository;
+  @Autowired
+  private JobTagsRepository jobTagsRepository;
 
   @Autowired
   private BCryptPasswordEncoder passwordEncoder;
@@ -59,6 +61,7 @@ public class MeE2ETest extends E2ETest {
     jobTitlesRepository.deleteAll();
     skillsRepository.deleteAll();
     jobJobSeekerRepository.deleteAll();
+    jobTagsRepository.deleteAll();
     jobsRepository.deleteAll();
     authRepository.deleteAll();
     userRepository.deleteAll();
@@ -99,6 +102,7 @@ public class MeE2ETest extends E2ETest {
     jobTitlesRepository.deleteAll();
     skillsRepository.deleteAll();
     jobJobSeekerRepository.deleteAll();
+    jobTagsRepository.deleteAll();
     jobsRepository.deleteAll();
     authRepository.deleteAll();
     userRepository.deleteAll();

@@ -3,10 +3,7 @@ package com.FairMatch.FairMatch.e2e;
 import com.FairMatch.FairMatch.model.Auth;
 import com.FairMatch.FairMatch.model.User;
 import com.FairMatch.FairMatch.model.UserType;
-import com.FairMatch.FairMatch.repository.AuthRepository;
-import com.FairMatch.FairMatch.repository.JobJobSeekerRepository;
-import com.FairMatch.FairMatch.repository.JobsRepository;
-import com.FairMatch.FairMatch.repository.UserRepository;
+import com.FairMatch.FairMatch.repository.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -42,6 +39,12 @@ public class SignupE2ETest extends E2ETest {
     private JobsRepository jobsRepository;
     @Autowired
     private JobJobSeekerRepository jobJobSeekerRepository;
+    @Autowired
+    private SkillsRepository skillsRepository;
+    @Autowired
+    private JobTitlesRepository jobTitlesRepository;
+    @Autowired
+    private JobTagsRepository jobTagsRepository;
 
     @BeforeAll
     static void beforeAll() throws Exception {
@@ -55,7 +58,10 @@ public class SignupE2ETest extends E2ETest {
 
     @BeforeEach
     void setUp() {
+      jobTitlesRepository.deleteAll();
+      skillsRepository.deleteAll();
       jobJobSeekerRepository.deleteAll();
+      jobTagsRepository.deleteAll();
       jobsRepository.deleteAll();
       authRepository.deleteAll();
       userRepository.deleteAll();
@@ -63,7 +69,10 @@ public class SignupE2ETest extends E2ETest {
 
     @AfterEach
     void tearDown() {
+      jobTitlesRepository.deleteAll();
+      skillsRepository.deleteAll();
       jobJobSeekerRepository.deleteAll();
+      jobTagsRepository.deleteAll();
       jobsRepository.deleteAll();
       authRepository.deleteAll();
       userRepository.deleteAll();

@@ -37,6 +37,11 @@ public class JobsE2ETest extends E2ETest {
   @Autowired
   private JobTagsRepository jobTagsRepository;
   @Autowired
+  private SkillsRepository skillsRepository;
+  @Autowired
+  private JobTitlesRepository jobTitlesRepository;
+
+  @Autowired
   private BCryptPasswordEncoder passwordEncoder;
 
   User employer;
@@ -57,6 +62,8 @@ public class JobsE2ETest extends E2ETest {
 
   @BeforeEach
   void setUp() {
+    jobTitlesRepository.deleteAll();
+    skillsRepository.deleteAll();
     jobJobSeekerRepository.deleteAll();
     jobTagsRepository.deleteAll();
     jobsRepository.deleteAll();
@@ -96,6 +103,8 @@ public class JobsE2ETest extends E2ETest {
 
   @AfterEach
   void tearDown() {
+    jobTitlesRepository.deleteAll();
+    skillsRepository.deleteAll();
     jobJobSeekerRepository.deleteAll();
     jobTagsRepository.deleteAll();
     jobsRepository.deleteAll();
