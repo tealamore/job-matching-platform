@@ -3,6 +3,7 @@ package com.FairMatch.FairMatch.service;
 import com.FairMatch.FairMatch.dto.CreateJobRequest;
 import com.FairMatch.FairMatch.model.User;
 import com.FairMatch.FairMatch.model.UserType;
+import com.FairMatch.FairMatch.repository.JobJobSeekerRepository;
 import com.FairMatch.FairMatch.repository.JobTagsRepository;
 import com.FairMatch.FairMatch.repository.JobsRepository;
 import com.FairMatch.FairMatch.repository.UserRepository;
@@ -22,6 +23,7 @@ public class JobServiceTest {
   private UserRepository userRepository;
   private JobsRepository jobsRepository;
   private JobTagsRepository jobTagsRepository;
+  private JobJobSeekerRepository jobJobSeekerRepository;
 
   private JobService jobService;
 
@@ -32,8 +34,9 @@ public class JobServiceTest {
     userRepository = mock(UserRepository.class);
     jobsRepository = mock(JobsRepository.class);
     jobTagsRepository = mock(JobTagsRepository.class);
+    jobJobSeekerRepository = mock(JobJobSeekerRepository.class);
 
-    jobService = new JobService(jobsRepository, jobTagsRepository, userRepository);
+    jobService = new JobService(jobsRepository, jobTagsRepository, userRepository, jobJobSeekerRepository);
 
     mockUser = User.builder()
       .id(UUID.randomUUID())

@@ -1,6 +1,7 @@
 package com.FairMatch.FairMatch.controller;
 
 import com.FairMatch.FairMatch.dto.CreateJobRequest;
+import com.FairMatch.FairMatch.dto.InteractJobRequest;
 import com.FairMatch.FairMatch.model.Jobs;
 import com.FairMatch.FairMatch.service.JobService;
 import com.FairMatch.FairMatch.service.JwtService;
@@ -30,5 +31,12 @@ public class JobController {
     String username = jwtService.getUsernameFromCookies(request.getCookies());
 
     return jobService.createJob(jobRequest, username);
+  }
+
+  @PostMapping("/interact")
+  public void interactJob(@Valid @RequestBody InteractJobRequest jobRequest, HttpServletRequest request) {
+    String username = jwtService.getUsernameFromCookies(request.getCookies());
+
+    jobService.interactJob(jobRequest, username);
   }
 }
