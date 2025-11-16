@@ -12,11 +12,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SkillsDTO {
+public class SkillsResponse {
   private String skillName;
   private UUID id;
 
-  public SkillsDTO(Skills skills) {
+  public SkillsResponse(Skills skills) {
     if (skills == null) {
       return;
     }

@@ -2,18 +2,16 @@ package com.FairMatch.FairMatch.service;
 
 import com.FairMatch.FairMatch.dto.CreateJobRequest;
 import com.FairMatch.FairMatch.dto.InteractJobRequest;
-import com.FairMatch.FairMatch.dto.JobsDTO;
+import com.FairMatch.FairMatch.dto.JobsResponse;
 import com.FairMatch.FairMatch.exception.BadRequestException;
 import com.FairMatch.FairMatch.model.*;
 import com.FairMatch.FairMatch.repository.JobJobSeekerRepository;
 import com.FairMatch.FairMatch.repository.JobTagsRepository;
 import com.FairMatch.FairMatch.repository.JobsRepository;
 import com.FairMatch.FairMatch.repository.UserRepository;
-import jakarta.validation.Valid;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.Instant;
 import java.util.Date;
@@ -92,10 +90,10 @@ public class JobService {
     jobJobSeekerRepository.save(jjs);
   }
 
-  public JobsDTO getJobById(UUID id) {
+  public JobsResponse getJobById(UUID id) {
     Jobs jobs = jobsRepository.findById(id)
       .orElseThrow(BadRequestException::new);
 
-    return new JobsDTO(jobs);
+    return new JobsResponse(jobs);
   }
 }

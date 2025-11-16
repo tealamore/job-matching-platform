@@ -1,6 +1,6 @@
 package com.FairMatch.FairMatch.service;
 
-import com.FairMatch.FairMatch.dto.UserDto;
+import com.FairMatch.FairMatch.dto.UserResponse;
 import com.FairMatch.FairMatch.model.*;
 import com.FairMatch.FairMatch.repository.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,9 +46,9 @@ public class MeServiceTest {
     when(userRepository.findByEmail(username))
       .thenReturn(Optional.of(mockUser));
 
-    UserDto user = meService.getMe(username);
+    UserResponse user = meService.getMe(username);
 
-    assertEquals(new UserDto(mockUser), user);
+    assertEquals(new UserResponse(mockUser), user);
 
     verifyNoInteractions(skillsRepository, jobTitlesRepository);
   }
@@ -74,9 +74,9 @@ public class MeServiceTest {
     when(jobTitlesRepository.findByUserId(mockUser.getId()))
       .thenReturn(List.of(jobTitle));
 
-    UserDto user = meService.getMe(username);
+    UserResponse user = meService.getMe(username);
 
-    assertEquals(new UserDto(mockUser, List.of(jobTitle), List.of(skill)), user);
+    assertEquals(new UserResponse(mockUser, List.of(jobTitle), List.of(skill)), user);
   }
 
   @Test

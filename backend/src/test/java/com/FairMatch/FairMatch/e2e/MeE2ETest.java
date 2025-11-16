@@ -1,6 +1,6 @@
 package com.FairMatch.FairMatch.e2e;
 
-import com.FairMatch.FairMatch.dto.UserDto;
+import com.FairMatch.FairMatch.dto.UserResponse;
 import com.FairMatch.FairMatch.model.*;
 import com.FairMatch.FairMatch.repository.*;
 import org.junit.jupiter.api.*;
@@ -131,11 +131,11 @@ public class MeE2ETest extends E2ETest {
     headers.set("Cookie", "authToken=" + authCookie);
     HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
-    ResponseEntity<UserDto> response = restTemplate.exchange(meUrl, HttpMethod.GET, requestEntity, UserDto.class);
+    ResponseEntity<UserResponse> response = restTemplate.exchange(meUrl, HttpMethod.GET, requestEntity, UserResponse.class);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
-    UserDto returnedUser = response.getBody();
+    UserResponse returnedUser = response.getBody();
 
     assertNotNull(returnedUser);
 
@@ -172,11 +172,11 @@ public class MeE2ETest extends E2ETest {
     headers.set("Cookie", "authToken=" + authCookie);
     HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
-    ResponseEntity<UserDto> response = restTemplate.exchange(meUrl, HttpMethod.GET, requestEntity, UserDto.class);
+    ResponseEntity<UserResponse> response = restTemplate.exchange(meUrl, HttpMethod.GET, requestEntity, UserResponse.class);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
 
-    UserDto returnedUser = response.getBody();
+    UserResponse returnedUser = response.getBody();
 
     assertNotNull(returnedUser);
 
