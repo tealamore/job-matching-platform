@@ -1,10 +1,7 @@
 package com.FairMatch.FairMatch.config;
 
 import com.FairMatch.FairMatch.model.*;
-import com.FairMatch.FairMatch.repository.AuthRepository;
-import com.FairMatch.FairMatch.repository.JobJobSeekerRepository;
-import com.FairMatch.FairMatch.repository.JobsRepository;
-import com.FairMatch.FairMatch.repository.UserRepository;
+import com.FairMatch.FairMatch.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +21,10 @@ public class TestDataConfig {
                                      UserRepository userRepo,
                                      BCryptPasswordEncoder encoder,
                                      JobsRepository jobsRepository,
-                                     JobJobSeekerRepository jobJobSeekerRepository) {
+                                     JobJobSeekerRepository jobJobSeekerRepository,
+                                     JobTitlesRepository jobTitlesRepository,
+                                     SkillsRepository skillsRepository
+                                     ) {
         return args -> {
           String email = "user1@example.com";
 //          jobJobSeekerRepository.deleteAll();
@@ -88,6 +88,36 @@ public class TestDataConfig {
               .build();
 
             jobJobSeekerRepository.saveAndFlush(jobJobSeeker);
+          }
+
+          if (jobTitlesRepository.findAll().isEmpty()) {
+            User applicant = userRepo.findByEmail(applicant_email).orElseThrow();
+
+            JobTitles jobTitle1 = JobTitles.builder()
+              .title("Software Engineer")
+              .user(applicant)
+              .build();
+            JobTitles jobTitle2 = JobTitles.builder()
+              .title("Data Scientist")
+              .user(applicant)
+              .build();
+            jobTitlesRepository.saveAndFlush(jobTitle1);
+            jobTitlesRepository.saveAndFlush(jobTitle2);
+          }
+
+          if (skillsRepository.findAll().isEmpty()) {
+            User applicant = userRepo.findByEmail(applicant_email).orElseThrow();
+
+            Skills skill1 = Skills.builder()
+              .skillName("Java")
+              .user(applicant)
+              .build();
+            Skills skill2 = Skills.builder()
+              .skillName("Python")
+              .user(applicant)
+              .build();
+            skillsRepository.saveAndFlush(skill1);
+            skillsRepository.saveAndFlush(skill2);
           }
         };
     }
