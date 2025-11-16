@@ -1,9 +1,6 @@
 package com.FairMatch.FairMatch.e2e;
 
-import com.FairMatch.FairMatch.model.Auth;
-import com.FairMatch.FairMatch.model.Jobs;
-import com.FairMatch.FairMatch.model.User;
-import com.FairMatch.FairMatch.model.UserType;
+import com.FairMatch.FairMatch.model.*;
 import com.FairMatch.FairMatch.repository.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +11,10 @@ import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.List;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -152,5 +153,147 @@ public class JobsE2ETest extends E2ETest {
     ResponseEntity<Jobs> response = restTemplate.postForEntity(url, request, Jobs.class);
 
     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+  }
+
+  @Test
+  void interactJob_happyPath_forApplicant() {
+    String url = "http://localhost:" + port + "/jobs/interact";
+
+    String authCookie = getAuthToken(port, applicantEmail, restTemplate);
+
+    Jobs job = Jobs.builder()
+      .title("job title")
+      .description("job description")
+      .salary(12000.0)
+      .user(employer)
+      .build();
+
+    jobsRepository.saveAndFlush(job);
+    UUID jobId = job.getId();
+
+    String loginRequest = "{" +
+      "\"jobId\":\"" + jobId + "\"," +
+      "\"swipeStatus\":\"DISLIKE\"" +
+      "}";
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("Cookie", "authToken=" + authCookie);
+    HttpEntity<String> request = new HttpEntity<>(loginRequest, headers);
+
+    ResponseEntity<Jobs> response = restTemplate.postForEntity(url, request, Jobs.class);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    JobJobSeeker swiped = jobJobSeekerRepository.findAllByJobsIn(List.of(job))
+      .stream()
+      .findFirst()
+      .orElseThrow();
+
+    assertEquals(applicant.getId(), swiped.getUser().getId());
+    assertEquals(job.getId(), swiped.getJobs().getId());
+    assertEquals(SwipeStatus.DISLIKE, swiped.getStatus());
+  }
+
+  @Test
+  void interactJob_happyPath_liked_forApplicant() {
+    String url = "http://localhost:" + port + "/jobs/interact";
+
+    String authCookie = getAuthToken(port, applicantEmail, restTemplate);
+
+    Jobs job = Jobs.builder()
+      .title("job title")
+      .description("job description")
+      .salary(12000.0)
+      .user(employer)
+      .build();
+
+    jobsRepository.saveAndFlush(job);
+    UUID jobId = job.getId();
+
+    String loginRequest = "{" +
+      "\"jobId\":\"" + jobId + "\"," +
+      "\"swipeStatus\":\"LIKE\"" +
+      "}";
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("Cookie", "authToken=" + authCookie);
+    HttpEntity<String> request = new HttpEntity<>(loginRequest, headers);
+
+    ResponseEntity<Jobs> response = restTemplate.postForEntity(url, request, Jobs.class);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    JobJobSeeker swiped = jobJobSeekerRepository.findAllByJobsIn(List.of(job))
+      .stream()
+      .findFirst()
+      .orElseThrow();
+
+    assertEquals(applicant.getId(), swiped.getUser().getId());
+    assertEquals(job.getId(), swiped.getJobs().getId());
+    assertEquals(SwipeStatus.LIKE, swiped.getStatus());
+  }
+
+  @Test
+  void interactJob_happyPath_invalidSwipeType_forApplicant() {
+    String url = "http://localhost:" + port + "/jobs/interact";
+
+    String authCookie = getAuthToken(port, applicantEmail, restTemplate);
+
+    Jobs job = Jobs.builder()
+      .title("job title")
+      .description("job description")
+      .salary(12000.0)
+      .user(employer)
+      .build();
+
+    jobsRepository.saveAndFlush(job);
+    UUID jobId = job.getId();
+
+    String loginRequest = "{" +
+      "\"jobId\":\"" + jobId + "\"," +
+      "\"swipeStatus\":\"INVALID_SWIPE\"" +
+      "}";
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("Cookie", "authToken=" + authCookie);
+    HttpEntity<String> request = new HttpEntity<>(loginRequest, headers);
+
+    ResponseEntity<Jobs> response = restTemplate.postForEntity(url, request, Jobs.class);
+
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+
+    assertThat(jobJobSeekerRepository.findAll()).isEmpty();
+  }
+
+  @Test
+  void interactJob_401_forEmployer() {
+    String url = "http://localhost:" + port + "/jobs/interact";
+
+    String authCookie = getAuthToken(port, employerEmail, restTemplate);
+
+    Jobs job = Jobs.builder()
+      .title("job title")
+      .description("job description")
+      .salary(12000.0)
+      .user(employer)
+      .build();
+
+    jobsRepository.saveAndFlush(job);
+    UUID jobId = job.getId();
+
+    String loginRequest = "{" +
+      "\"jobId\":\"" + jobId + "\"," +
+      "\"swipeStatus\":\"DISLIKE\"" +
+      "}";
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("Cookie", "authToken=" + authCookie);
+    HttpEntity<String> request = new HttpEntity<>(loginRequest, headers);
+
+    ResponseEntity<Jobs> response = restTemplate.postForEntity(url, request, Jobs.class);
+
+    assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+
+    assertThat(jobJobSeekerRepository.findAll()).isEmpty();
   }
 }
