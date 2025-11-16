@@ -1,14 +1,16 @@
 package com.FairMatch.FairMatch.controller;
 
+import com.FairMatch.FairMatch.model.Jobs;
 import com.FairMatch.FairMatch.model.User;
 import com.FairMatch.FairMatch.service.JwtService;
 import com.FairMatch.FairMatch.service.MeService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/me")
@@ -23,9 +25,16 @@ public class MeController {
   }
 
   @GetMapping
-  public User getMe(HttpServletRequest request, HttpServletResponse response) {
+  public User getMe(HttpServletRequest request) {
     String username = jwtService.getUsernameFromCookies(request.getCookies());
 
     return meService.getMe(username);
+  }
+
+  @GetMapping("/jobs")
+  public List<Jobs> getMyJobs(HttpServletRequest request) {
+    String username = jwtService.getUsernameFromCookies(request.getCookies());
+
+    return meService.getMyJobs(username);
   }
 }

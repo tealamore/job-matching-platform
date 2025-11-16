@@ -1,5 +1,6 @@
 package com.FairMatch.FairMatch.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,12 +24,13 @@ public class JobJobSeeker {
   @Column(nullable = false)
   private Date appliedDate;
 
-  @OneToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "swiped_on", nullable = false, unique = true)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "swiped_on", nullable = false)
   private User user;
 
-  @OneToOne(fetch = FetchType.EAGER)
-  @JoinColumn(name = "job_id", nullable = false, unique = true)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "job_id", nullable = false)
+  @JsonIgnore
   private Jobs jobs;
 
   @Enumerated(EnumType.STRING)
