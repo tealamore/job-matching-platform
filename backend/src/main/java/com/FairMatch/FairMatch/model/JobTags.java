@@ -22,7 +22,7 @@ public class JobTags {
   @Column(nullable = false)
   private String skillName;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "jobs_id", nullable = false, unique = true)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "jobs_id", nullable = false)
   private Jobs jobs;
 }
