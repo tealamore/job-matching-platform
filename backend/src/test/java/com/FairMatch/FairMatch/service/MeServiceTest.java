@@ -1,11 +1,8 @@
 package com.FairMatch.FairMatch.service;
 
-import com.FairMatch.FairMatch.model.Jobs;
-import com.FairMatch.FairMatch.model.User;
-import com.FairMatch.FairMatch.model.UserType;
-import com.FairMatch.FairMatch.repository.JobJobSeekerRepository;
-import com.FairMatch.FairMatch.repository.JobsRepository;
-import com.FairMatch.FairMatch.repository.UserRepository;
+import com.FairMatch.FairMatch.dto.UserDto;
+import com.FairMatch.FairMatch.model.*;
+import com.FairMatch.FairMatch.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,7 +20,8 @@ public class MeServiceTest {
   private User mockUser;
   private UserRepository userRepository;
   private JobsRepository jobsRepository;
-  private JobJobSeekerRepository jobJobSeekerRepository;
+  private JobTitlesRepository jobTitlesRepository;
+  private SkillsRepository skillsRepository;
 
   private MeService meService;
 
@@ -31,7 +29,9 @@ public class MeServiceTest {
   void setUp() {
     userRepository = mock(UserRepository.class);
     jobsRepository = mock(JobsRepository.class);
-    meService = new MeService(userRepository, jobsRepository);
+    jobTitlesRepository = mock(JobTitlesRepository.class);
+    skillsRepository = mock(SkillsRepository.class);
+    meService = new MeService(userRepository, jobsRepository, jobTitlesRepository, skillsRepository);
 
     mockUser = User.builder()
       .id(UUID.randomUUID())
@@ -40,14 +40,43 @@ public class MeServiceTest {
   }
 
   @Test
-  void testGetMe() {
+  void testGetMe_doesntGet_SkillsOrTitles_forBusinessUser() {
     String username = "username";
+
     when(userRepository.findByEmail(username))
       .thenReturn(Optional.of(mockUser));
 
-    User user = meService.getMe(username);
+    UserDto user = meService.getMe(username);
 
-    assertEquals(mockUser, user);
+    assertEquals(new UserDto(mockUser), user);
+
+    verifyNoInteractions(skillsRepository, jobTitlesRepository);
+  }
+
+  @Test
+  void testGetMe_gets_SkillsOrTitles_forApplicantUser() {
+    String username = "username";
+    mockUser.setUserType(UserType.JOB_SEEKER);
+    Skills skill = Skills.builder()
+      .id(UUID.randomUUID())
+      .skillName("Java")
+      .build();
+
+    JobTitles jobTitle = JobTitles.builder()
+      .id(UUID.randomUUID())
+      .title("Software Engineer")
+      .build();
+
+    when(userRepository.findByEmail(username))
+      .thenReturn(Optional.of(mockUser));
+    when(skillsRepository.findByUserId(mockUser.getId()))
+      .thenReturn(List.of(skill));
+    when(jobTitlesRepository.findByUserId(mockUser.getId()))
+      .thenReturn(List.of(jobTitle));
+
+    UserDto user = meService.getMe(username);
+
+    assertEquals(new UserDto(mockUser, List.of(jobTitle), List.of(skill)), user);
   }
 
   @Test
