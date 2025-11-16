@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Arrays;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -25,7 +26,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Void> handleGeneralException(Exception ex) {
-      System.out.println(ex.getMessage());
+      System.out.println("Failed because: " + ex.getMessage());
+      System.out.println(Arrays.toString(ex.getStackTrace()));
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }

@@ -160,4 +160,17 @@ public class JobServiceTest {
 
     verifyNoInteractions(jobsRepository, jobJobSeekerRepository);
   }
+
+  @Test
+  void testGetJobById_throws_ifJobNotFound() {
+    assertThrows(BadRequestException.class, () -> jobService.getJobById(UUID.randomUUID()));
+  }
+
+  @Test
+  void testGetJobById_returns_job() {
+    when(jobsRepository.findById(any()))
+      .thenReturn(Optional.of(new Jobs()));
+
+    jobService.getJobById(UUID.randomUUID());
+  }
 }

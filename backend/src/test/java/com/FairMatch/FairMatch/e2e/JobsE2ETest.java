@@ -1,5 +1,6 @@
 package com.FairMatch.FairMatch.e2e;
 
+import com.FairMatch.FairMatch.dto.JobsDTO;
 import com.FairMatch.FairMatch.model.*;
 import com.FairMatch.FairMatch.repository.*;
 import org.junit.jupiter.api.*;
@@ -295,5 +296,31 @@ public class JobsE2ETest extends E2ETest {
     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
 
     assertThat(jobJobSeekerRepository.findAll()).isEmpty();
+  }
+
+  @Test
+  void getJobById_happyPath_returnsJob() {
+    String authCookie = getAuthToken(port, employerEmail, restTemplate);
+
+    Jobs job = Jobs.builder()
+      .title("job title")
+      .description("job description")
+      .salary(12000.0)
+      .user(employer)
+      .build();
+
+    jobsRepository.saveAndFlush(job);
+
+    String jobUrl = "http://localhost:" + port + "/jobs/" + job.getId().toString();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("Cookie", "authToken=" + authCookie);
+    HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+
+    ResponseEntity<JobsDTO> response = restTemplate.exchange(jobUrl, HttpMethod.GET, requestEntity, JobsDTO.class);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(response.getBody(), new JobsDTO(job));
   }
 }

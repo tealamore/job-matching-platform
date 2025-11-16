@@ -2,6 +2,7 @@ package com.FairMatch.FairMatch.controller;
 
 import com.FairMatch.FairMatch.dto.CreateJobRequest;
 import com.FairMatch.FairMatch.dto.InteractJobRequest;
+import com.FairMatch.FairMatch.dto.JobsDTO;
 import com.FairMatch.FairMatch.model.Jobs;
 import com.FairMatch.FairMatch.service.JobService;
 import com.FairMatch.FairMatch.service.JwtService;
@@ -9,10 +10,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/jobs")
@@ -38,5 +38,14 @@ public class JobController {
     String username = jwtService.getUsernameFromCookies(request.getCookies());
 
     jobService.interactJob(jobRequest, username);
+  }
+
+  @GetMapping("/{id}")
+  public JobsDTO getJobById(@PathVariable UUID id) {
+    JobsDTO jobs = jobService.getJobById(id);
+
+    System.out.println(jobs);
+
+    return jobs;
   }
 }

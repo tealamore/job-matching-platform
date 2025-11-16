@@ -2,6 +2,7 @@ package com.FairMatch.FairMatch.service;
 
 import com.FairMatch.FairMatch.dto.CreateJobRequest;
 import com.FairMatch.FairMatch.dto.InteractJobRequest;
+import com.FairMatch.FairMatch.dto.JobsDTO;
 import com.FairMatch.FairMatch.exception.BadRequestException;
 import com.FairMatch.FairMatch.model.*;
 import com.FairMatch.FairMatch.repository.JobJobSeekerRepository;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class JobService {
@@ -88,5 +90,12 @@ public class JobService {
       .build();
 
     jobJobSeekerRepository.save(jjs);
+  }
+
+  public JobsDTO getJobById(UUID id) {
+    Jobs jobs = jobsRepository.findById(id)
+      .orElseThrow(BadRequestException::new);
+
+    return new JobsDTO(jobs);
   }
 }
