@@ -46,3 +46,4 @@ public class Jobs {
     this.jobJobSeekers = List.of(jobJobSeeker);
   }
 }
+
