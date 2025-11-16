@@ -1,12 +1,8 @@
 package com.FairMatch.FairMatch.e2e;
 
-import com.FairMatch.FairMatch.model.Auth;
-import com.FairMatch.FairMatch.model.User;
-import com.FairMatch.FairMatch.model.UserType;
-import com.FairMatch.FairMatch.repository.AuthRepository;
-import com.FairMatch.FairMatch.repository.JobJobSeekerRepository;
-import com.FairMatch.FairMatch.repository.JobsRepository;
-import com.FairMatch.FairMatch.repository.UserRepository;
+import com.FairMatch.FairMatch.dto.UserDto;
+import com.FairMatch.FairMatch.model.*;
+import com.FairMatch.FairMatch.repository.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +12,7 @@ import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -34,6 +30,11 @@ public class MeE2ETest extends E2ETest {
   private JobsRepository jobsRepository;
   @Autowired
   private JobJobSeekerRepository jobJobSeekerRepository;
+  @Autowired
+  private SkillsRepository skillsRepository;
+  @Autowired
+  private JobTitlesRepository jobTitlesRepository;
+
   @Autowired
   private BCryptPasswordEncoder passwordEncoder;
 
@@ -55,6 +56,8 @@ public class MeE2ETest extends E2ETest {
 
   @BeforeEach
   void setUp() {
+    jobTitlesRepository.deleteAll();
+    skillsRepository.deleteAll();
     jobJobSeekerRepository.deleteAll();
     jobsRepository.deleteAll();
     authRepository.deleteAll();
@@ -93,6 +96,8 @@ public class MeE2ETest extends E2ETest {
 
   @AfterEach
   void tearDown() {
+    jobTitlesRepository.deleteAll();
+    skillsRepository.deleteAll();
     jobJobSeekerRepository.deleteAll();
     jobsRepository.deleteAll();
     authRepository.deleteAll();
@@ -105,15 +110,39 @@ public class MeE2ETest extends E2ETest {
 
     String authCookie = getAuthToken(port, employerEmail, restTemplate);
 
+    Skills skill = Skills.builder()
+      .skillName("Java")
+      .user(employer)
+      .build();
+    skillsRepository.saveAndFlush(skill);
+
+    JobTitles jobTitle = JobTitles.builder()
+      .title("Software Engineer")
+      .user(employer)
+      .build();
+    jobTitlesRepository.saveAndFlush(jobTitle);
+
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.set("Cookie", "authToken=" + authCookie);
     HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
-    ResponseEntity<User> response = restTemplate.exchange(meUrl, HttpMethod.GET, requestEntity, User.class);
+    ResponseEntity<UserDto> response = restTemplate.exchange(meUrl, HttpMethod.GET, requestEntity, UserDto.class);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(response.getBody(), employer);
+
+    UserDto returnedUser = response.getBody();
+
+    assertNotNull(returnedUser);
+
+    assertEquals(employer.getId(), returnedUser.getId());
+    assertEquals(employer.getName(), returnedUser.getName());
+    assertEquals(employer.getEmail(), returnedUser.getEmail());
+    assertEquals(employer.getPhone(), returnedUser.getPhone());
+    assertEquals(employer.getUserType(), returnedUser.getUserType());
+
+    assertNull(returnedUser.getDesiredTitles());
+    assertNull(returnedUser.getSkills());
   }
 
   @Test
@@ -122,15 +151,45 @@ public class MeE2ETest extends E2ETest {
 
     String authCookie = getAuthToken(port, applicantEmail, restTemplate);
 
+    Skills skill = Skills.builder()
+      .skillName("Java")
+      .user(applicant)
+      .build();
+    skillsRepository.saveAndFlush(skill);
+
+    JobTitles jobTitle = JobTitles.builder()
+      .title("Software Engineer")
+      .user(applicant)
+      .build();
+    jobTitlesRepository.saveAndFlush(jobTitle);
+
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.set("Cookie", "authToken=" + authCookie);
     HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
-    ResponseEntity<User> response = restTemplate.exchange(meUrl, HttpMethod.GET, requestEntity, User.class);
+    ResponseEntity<UserDto> response = restTemplate.exchange(meUrl, HttpMethod.GET, requestEntity, UserDto.class);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(response.getBody(), applicant);
+
+    UserDto returnedUser = response.getBody();
+
+    assertNotNull(returnedUser);
+
+    assertEquals(applicant.getId(), returnedUser.getId());
+    assertEquals(applicant.getName(), returnedUser.getName());
+    assertEquals(applicant.getEmail(), returnedUser.getEmail());
+    assertEquals(applicant.getPhone(), returnedUser.getPhone());
+    assertEquals(applicant.getUserType(), returnedUser.getUserType());
+
+    assertEquals(1, returnedUser.getDesiredTitles().size());
+    assertEquals(1, returnedUser.getSkills().size());
+
+    assertEquals(jobTitle.getTitle(), returnedUser.getDesiredTitles().get(0).getTitle());
+    assertEquals(jobTitle.getId(), returnedUser.getDesiredTitles().get(0).getId());
+
+    assertEquals(skill.getSkillName(), returnedUser.getSkills().get(0).getSkillName());
+    assertEquals(skill.getId(), returnedUser.getSkills().get(0).getId());
   }
 
 
