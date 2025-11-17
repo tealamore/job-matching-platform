@@ -1,8 +1,8 @@
 package com.FairMatch.FairMatch.service;
 
-import com.FairMatch.FairMatch.dto.CreateJobRequest;
-import com.FairMatch.FairMatch.dto.InteractJobRequest;
-import com.FairMatch.FairMatch.dto.JobsResponse;
+import com.FairMatch.FairMatch.dto.request.CreateJobRequest;
+import com.FairMatch.FairMatch.dto.request.InteractJobRequest;
+import com.FairMatch.FairMatch.dto.response.JobsResponse;
 import com.FairMatch.FairMatch.exception.BadRequestException;
 import com.FairMatch.FairMatch.model.*;
 import com.FairMatch.FairMatch.repository.*;
@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

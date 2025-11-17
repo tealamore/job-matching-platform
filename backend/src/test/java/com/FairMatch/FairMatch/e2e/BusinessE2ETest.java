@@ -1,7 +1,7 @@
 package com.FairMatch.FairMatch.e2e;
 
-import com.FairMatch.FairMatch.dto.JobsResponse;
-import com.FairMatch.FairMatch.dto.UserResponse;
+import com.FairMatch.FairMatch.dto.response.JobsResponse;
+import com.FairMatch.FairMatch.dto.response.UserResponse;
 import com.FairMatch.FairMatch.model.Auth;
 import com.FairMatch.FairMatch.model.Jobs;
 import com.FairMatch.FairMatch.model.User;

@@ -1,7 +1,7 @@
 package com.FairMatch.FairMatch.controller;
 
-import com.FairMatch.FairMatch.dto.LoginRequest;
-import com.FairMatch.FairMatch.dto.SignupRequest;
+import com.FairMatch.FairMatch.dto.request.LoginRequest;
+import com.FairMatch.FairMatch.dto.request.SignupRequest;
 import com.FairMatch.FairMatch.model.Auth;
 import com.FairMatch.FairMatch.service.AuthService;
 import com.FairMatch.FairMatch.service.JwtService;

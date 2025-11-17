@@ -1,6 +1,6 @@
 package com.FairMatch.FairMatch.service;
 
-import com.FairMatch.FairMatch.dto.UserResponse;
+import com.FairMatch.FairMatch.dto.response.UserResponse;
 import com.FairMatch.FairMatch.model.*;
 import com.FairMatch.FairMatch.repository.*;
 import org.junit.jupiter.api.BeforeEach;

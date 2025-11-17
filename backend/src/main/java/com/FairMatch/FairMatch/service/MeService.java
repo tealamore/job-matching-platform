@@ -1,12 +1,12 @@
 package com.FairMatch.FairMatch.service;
 
-import com.FairMatch.FairMatch.dto.UserResponse;
+import com.FairMatch.FairMatch.dto.request.UpdateMeRequest;
+import com.FairMatch.FairMatch.dto.response.UserResponse;
 import com.FairMatch.FairMatch.exception.BadRequestException;
 import com.FairMatch.FairMatch.model.*;
-import com.FairMatch.FairMatch.repository.JobTitlesRepository;
-import com.FairMatch.FairMatch.repository.JobsRepository;
-import com.FairMatch.FairMatch.repository.SkillsRepository;
-import com.FairMatch.FairMatch.repository.UserRepository;
+import com.FairMatch.FairMatch.repository.*;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -20,13 +20,15 @@ public class MeService {
   private final JobsRepository jobsRepository;
   private final JobTitlesRepository jobTitlesRepository;
   private final SkillsRepository skillsRepository;
+  private final AuthRepository authRepository;
 
   @Autowired
-  public MeService(UserRepository userRepository, JobsRepository jobsRepository, JobTitlesRepository jobTitlesRepository, SkillsRepository skillsRepository) {
+  public MeService(UserRepository userRepository, JobsRepository jobsRepository, JobTitlesRepository jobTitlesRepository, SkillsRepository skillsRepository, AuthRepository authRepository) {
     this.userRepository = userRepository;
     this.jobsRepository = jobsRepository;
     this.jobTitlesRepository = jobTitlesRepository;
     this.skillsRepository = skillsRepository;
+    this.authRepository = authRepository;
   }
 
   public UserResponse getMe(String username) {
@@ -64,5 +66,88 @@ public class MeService {
     List<Jobs> jobs = jobsRepository.findAllByUser(user);
 
     return new UserResponse(user, jobs);
+  }
+
+  @Transactional
+  public void updateMe(String username, UpdateMeRequest updateMeRequest) {
+    User user = userRepository.findByEmail(username)
+      .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+    if (updateMeRequest.getName() != null && !updateMeRequest.getName().isBlank())
+      user.setName(updateMeRequest.getName());
+    if (updateMeRequest.getPhone() != null && !updateMeRequest.getPhone().isBlank())
+      user.setPhone(updateMeRequest.getPhone());
+    if (updateMeRequest.getEmail() != null && !updateMeRequest.getEmail().isBlank())
+      user.setEmail(updateMeRequest.getEmail());
+
+    userRepository.save(user);
+
+    Auth auth = authRepository.findByUsername(username)
+      .orElseThrow(() -> new UsernameNotFoundException("Auth not found"));
+
+    if (updateMeRequest.getEmail() != null && !updateMeRequest.getEmail().isBlank())
+      auth.setUsername(updateMeRequest.getEmail());
+    if (updateMeRequest.getPassword() != null && !updateMeRequest.getPassword().isBlank())
+      auth.setPassword(updateMeRequest.getPassword());
+
+    authRepository.save(auth);
+  }
+
+  public void removeSkill(String username, String skill) {
+    User user = userRepository.findByEmail(username)
+      .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+    Skills existingSkill = skillsRepository.findByUserIdAndSkillName(user.getId(), skill)
+      .orElseThrow(BadRequestException::new);
+
+    skillsRepository.delete(existingSkill);
+  }
+
+  public void addSkill(String username, String skill) {
+    User user = userRepository.findByEmail(username)
+      .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+    Skills existingSkill = skillsRepository.findByUserIdAndSkillName(user.getId(), skill)
+      .orElse(null);
+
+    if (existingSkill != null) {
+      return;
+    }
+
+    Skills newSkill = Skills.builder()
+      .user(user)
+      .skillName(skill)
+      .build();
+
+    skillsRepository.save(newSkill);
+  }
+
+  public void removeJobTitle(String username, String title) {
+    User user = userRepository.findByEmail(username)
+      .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+    JobTitles existingTitle = jobTitlesRepository.findByUserIdAndTitle(user.getId(), title)
+      .orElseThrow(BadRequestException::new);
+
+    jobTitlesRepository.delete(existingTitle);
+  }
+
+  public void addJobTitle(String username, String title) {
+    User user = userRepository.findByEmail(username)
+      .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+    JobTitles existingTitle = jobTitlesRepository.findByUserIdAndTitle(user.getId(), title)
+      .orElse(null);
+
+    if (existingTitle != null) {
+      return;
+    }
+
+    JobTitles newTitle = JobTitles.builder()
+      .user(user)
+      .title(title)
+      .build();
+
+    jobTitlesRepository.save(newTitle);
   }
 }

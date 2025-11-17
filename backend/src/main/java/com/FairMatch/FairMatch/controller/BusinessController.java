@@ -1,6 +1,6 @@
 package com.FairMatch.FairMatch.controller;
 
-import com.FairMatch.FairMatch.dto.UserResponse;
+import com.FairMatch.FairMatch.dto.response.UserResponse;
 import com.FairMatch.FairMatch.service.MeService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;

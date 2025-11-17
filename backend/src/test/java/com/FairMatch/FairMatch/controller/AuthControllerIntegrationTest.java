@@ -1,6 +1,6 @@
 package com.FairMatch.FairMatch.controller;
 
-import com.FairMatch.FairMatch.dto.LoginRequest;
+import com.FairMatch.FairMatch.dto.request.LoginRequest;
 import com.FairMatch.FairMatch.model.Auth;
 import com.FairMatch.FairMatch.service.AuthService;
 import com.FairMatch.FairMatch.service.JwtService;
@@ -15,9 +15,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import com.FairMatch.FairMatch.config.SecurityConfig;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;

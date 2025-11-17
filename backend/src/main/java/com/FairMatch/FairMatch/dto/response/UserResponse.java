@@ -1,4 +1,4 @@
-package com.FairMatch.FairMatch.dto;
+package com.FairMatch.FairMatch.dto.response;
 
 import com.FairMatch.FairMatch.model.*;
 import lombok.AllArgsConstructor;

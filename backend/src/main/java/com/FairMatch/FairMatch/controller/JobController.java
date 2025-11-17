@@ -1,8 +1,8 @@
 package com.FairMatch.FairMatch.controller;
 
-import com.FairMatch.FairMatch.dto.CreateJobRequest;
-import com.FairMatch.FairMatch.dto.InteractJobRequest;
-import com.FairMatch.FairMatch.dto.JobsResponse;
+import com.FairMatch.FairMatch.dto.request.CreateJobRequest;
+import com.FairMatch.FairMatch.dto.request.InteractJobRequest;
+import com.FairMatch.FairMatch.dto.response.JobsResponse;
 import com.FairMatch.FairMatch.model.Jobs;
 import com.FairMatch.FairMatch.service.JobService;
 import com.FairMatch.FairMatch.service.JwtService;
