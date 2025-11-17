@@ -91,7 +91,7 @@ export default function AppPage() {
 
       {view === "register" && (
         <div className="grid min-h-screen place-items-center px-4">
-          <RegisterCard onBack={() => setView("login")} />
+          <RegisterCard onLogin={handleLogin} />
         </div>
       )}
 

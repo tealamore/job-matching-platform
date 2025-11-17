@@ -36,9 +36,9 @@ export default function LoginPage({ onLogin }: { onLogin: (role: Role, remember:
       <div className="relative rounded-3xl bg-white/10 p-8 backdrop-blur-xl ring-1 ring-white/20 shadow-[0_20px_60px_rgba(0,0,0,.25)]">
         <div className="mb-6 flex items-center gap-3">
           <div className="grid h-9 w-9 place-items-center rounded-xl bg-white text-xl font-black text-gray-900 shadow-sm">
-            J
+            FM
           </div>
-          <div className="text-sm font-medium text-white/90">Job Matching Platform</div>
+          <div className="text-sm font-medium text-white/90">Fair Match</div>
         </div>
 
         <h1 className="text-xl font-semibold text-white">Welcome back</h1>
