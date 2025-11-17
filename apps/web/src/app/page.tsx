@@ -9,7 +9,7 @@ import LoginPage from "@/components/LoginPage";
 import DiscoverView from "@/components/DiscoverView";
 import RegisterCard from "@/components/RegisterCard";
 
-type Role = "candidate" | "recruiter";
+type Role = "JOB_SEEKER" | "BUSINESS";
 type View = "landing" | "login" | "register" | "discover";
 
 export default function AppPage() {
@@ -56,6 +56,8 @@ export default function AppPage() {
   };
 
   const handleLogout = () => {
+    debugger;
+    document.cookie = "authToken=; Max-Age=-99999999;";
     localStorage.removeItem("role");
     localStorage.removeItem("isAuthenticated");
     setIsLoggedIn(false);

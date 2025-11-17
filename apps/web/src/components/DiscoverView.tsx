@@ -1,12 +1,13 @@
 // src/components/DiscoverView.tsx
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SwipeDeck, { type SwipeDirection } from '@/components/SwipeDeck';
 import EmployerCard, { type Employer } from '@/components/EmployerCard';
 import JobCard, { type Job } from '@/components/JobCard';
-import { sampleEmployers, sampleJobs } from '@/data/sample';
+import { sampleEmployers } from '@/data/sample';
+import axios from 'axios';
 
-type Role = 'candidate' | 'recruiter';
+type Role = "JOB_SEEKER" | "BUSINESS";
 
 function EndOfDeck({
   total,
@@ -55,10 +56,9 @@ export default function DiscoverView({
   userRole: Role | null;
   onLogout: () => void;
 }) {
-  const [tab, setTab] = useState<'jobs' | 'employers'>('jobs');
   const [lastAction, setLastAction] = useState<string | null>(null);
+  const [jobs, setJobs] = useState<Job[]>([]);
 
-  // per-deck stats
   const [jobStats, setJobStats] = useState({ liked: 0, noped: 0 });
   const [empStats, setEmpStats] = useState({ liked: 0, noped: 0 });
 
@@ -85,51 +85,30 @@ export default function DiscoverView({
     <EndOfDeck total={empStats.liked + empStats.noped} liked={empStats.liked} noped={empStats.noped} />
   );
 
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const response = await axios.get<Job[]>('/jobs/feed', {withCredentials: true});
+        setJobs(response.data);
+      } catch (err) {
+        console.error("failed to load jobs", err);
+      } 
+    }
+
+    fetchJobs()
+  }, [])
+
   return (
     <div className="mx-auto grid h-[100dvh] max-w-6xl grid-rows-[auto_1fr_auto] gap-3 px-4 py-4 overflow-visible">
-      {/* Row 1: compact toolbar + centered tabs */}
       <header className="grid grid-cols-[1fr_auto_1fr] items-center">
-        {/* Left: brand */}
         <div className="flex items-center gap-2">
           <div className="grid h-8 w-8 place-items-center rounded-lg bg-white text-[0.9rem] font-black text-gray-900 shadow-sm">
-            J
+            FM
           </div>
-          <span className="text-sm font-medium text-white/90">Job Matching Platform</span>
+          <span className="text-sm font-medium text-white/90">Fair Match</span>
         </div>
 
-        {/* Center: tabs */}
-        <div className="justify-self-center">
-          <div className="inline-flex overflow-hidden rounded-xl border border-white/30 bg-white/10 p-1 shadow-sm backdrop-blur">
-            <button
-              onClick={() => setTab('jobs')}
-              className={[
-                'rounded-lg px-4 py-2 text-sm transition',
-                tab === 'jobs' ? 'bg-white text-gray-900' : 'text-white hover:bg-white/10',
-              ].join(' ')}
-              aria-pressed={tab === 'jobs'}
-            >
-              Candidates: Jobs
-            </button>
-            <button
-              onClick={() => setTab('employers')}
-              className={[
-                'rounded-lg px-4 py-2 text-sm transition',
-                tab === 'employers' ? 'bg-white text-gray-900' : 'text-white hover:bg-white/10',
-              ].join(' ')}
-              aria-pressed={tab === 'employers'}
-            >
-              Recruiters: Employers
-            </button>
-          </div>
-        </div>
-
-        {/* Right: user chip + logout */}
         <div className="justify-self-end flex items-center gap-2">
-          {userRole && (
-            <span className="rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-medium text-white/90 backdrop-blur">
-              Signed in as <strong className="ml-1 capitalize">{userRole}</strong>
-            </span>
-          )}
           <button
             onClick={onLogout}
             className="rounded-lg border border-white/30 bg-white/10 px-3 py-1.5 text-sm text-white backdrop-blur transition hover:bg-white/20 active:translate-y-px"
@@ -139,11 +118,10 @@ export default function DiscoverView({
         </div>
       </header>
 
-      {/* Row 2: deck */}
       <div className="flex items-start justify-center pt-2 md:pt-4 overflow-visible">
-        {tab === 'jobs' ? (
+        {userRole === 'JOB_SEEKER' ? (
           <SwipeDeck<Job>
-            items={sampleJobs}
+            items={jobs}
             onSwipe={onSwipeJob}
             width="clamp(36ch, 42vw, 60ch)"
             controlsInside
@@ -166,7 +144,6 @@ export default function DiscoverView({
         )}
       </div>
 
-      {/* Row 3: status */}
       <div className="pointer-events-none select-none text-center text-sm text-white/90">
         {lastAction ? lastAction : 'Tip: drag or use ← / → (A / D).'}
       </div>

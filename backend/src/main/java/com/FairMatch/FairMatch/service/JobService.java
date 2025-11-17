@@ -135,6 +135,13 @@ public class JobService {
     uniqueJobs.removeIf(it -> alreadyApplied.contains(it.getId()));
     uniqueJobs.forEach(it -> it.setJobJobSeekers(Collections.emptyList()));
 
+    if (uniqueJobs.isEmpty()) {
+      return jobsRepository.findAll()
+        .stream()
+        .map(JobsResponse::new)
+        .toList();
+    }
+
     return uniqueJobs.stream()
       .map(JobsResponse::new)
       .toList();

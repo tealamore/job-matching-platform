@@ -1,5 +1,6 @@
 // src/components/SwipeDeck.tsx
 'use client';
+import axios from 'axios';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 export type SwipeDirection = 'left' | 'right';
@@ -69,10 +70,26 @@ export default function SwipeDeck<T extends WithId>({
   };
 
   const commitSwipe = useCallback(
-    (dir: SwipeDirection) => {
+    async (dir: SwipeDirection) => {
       if (index >= items.length) return;
       const item = items[index];
       setAnimating(dir);
+
+      var swipeStatus;
+      if (dir == 'right') {
+        swipeStatus = 'LIKE';
+      } else {
+        swipeStatus = 'DISLIKE';
+      }
+
+      try {
+        await axios.post('/jobs/interact', {
+          swipeStatus,
+          jobId: item.id
+        });
+      } catch (err) {
+        console.error("failed to load jobs", err);
+      } 
 
       const el = topEl.current;
       const offX = (dir === 'right' ? 1 : -1) * (window.innerWidth + 240);

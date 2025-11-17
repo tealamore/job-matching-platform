@@ -3,6 +3,7 @@ package com.FairMatch.FairMatch.service;
 import com.FairMatch.FairMatch.model.Auth;
 import com.FairMatch.FairMatch.util.JwtUtil;
 import jakarta.servlet.http.Cookie;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,8 @@ public class JwtService {
 
     public Cookie generateAuthCookie(String token) {
         Cookie cookie = new Cookie(AUTH_COOKIE, token);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setHttpOnly(false);
+        cookie.setSecure(false);
         cookie.setPath("/");
         cookie.setMaxAge(24 * 60 * 60);
         return cookie;
