@@ -36,10 +36,10 @@ export default function LandingHero({
       >
         <div className="flex items-center gap-[0.55rem] rounded-xl border border-white/25 bg-white/10 px-[0.6rem] py-[0.35rem] backdrop-blur">
           <div className="grid h-[clamp(30px,3.2vw,40px)] w-[clamp(30px,3.2vw,40px)] place-items-center rounded-lg bg-white text-[clamp(.75rem,1vw,.9rem)] font-black text-gray-900">
-            J
+            FM
           </div>
           <span className="select-none text-[clamp(.72rem,1vw,.84rem)] font-medium tracking-wide text-white/90">
-            Job Matching Platform
+            Fair Match
           </span>
         </div>
 
