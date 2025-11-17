@@ -3,12 +3,12 @@
 import { useState } from "react";
 import axios from 'axios';
 
-type Role = "candidate" | "recruiter";
+type Role = "JOB_SEEKER" | "BUSINESS";
 
 export default function LoginPage({ onLogin }: { onLogin: (role: Role, remember: boolean) => void }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<Role>("candidate");
+  const [role, setRole] = useState<Role>("JOB_SEEKER");
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
 
@@ -17,9 +17,11 @@ export default function LoginPage({ onLogin }: { onLogin: (role: Role, remember:
     setError("");
 
     try {
-      const response = await axios.post('http://localhost:8080/auth/login', {
+      const response = await axios.post('/auth/login', {
         email: username,
         password
+      }, {
+        withCredentials: true
       });
       onLogin(response.data.role || role, response.data.remember || remember);
     } catch (error: any) {
@@ -43,24 +45,6 @@ export default function LoginPage({ onLogin }: { onLogin: (role: Role, remember:
         <p className="mt-1 text-sm text-white/80">Sign in and choose your role to tailor the experience.</p>
 
         <form onSubmit={submit} className="mt-6 space-y-4" noValidate>
-          {/* Role selector */}
-          <div className="inline-grid grid-cols-2 overflow-hidden rounded-xl ring-1 ring-white/20 bg-white/10 backdrop-blur">
-            {(["candidate","recruiter"] as Role[]).map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setRole(r)}
-                className={[
-                  "px-4 py-2 text-sm transition",
-                  role === r ? "bg-white text-gray-900" : "text-white/90 hover:bg-white/10"
-                ].join(" ")}
-                aria-pressed={role === r}
-              >
-                {r[0].toUpperCase() + r.slice(1)}
-              </button>
-            ))}
-          </div>
-
           <div>
             <label htmlFor="username" className="mb-1 block text-xs font-medium text-white/80">Username</label>
             <input

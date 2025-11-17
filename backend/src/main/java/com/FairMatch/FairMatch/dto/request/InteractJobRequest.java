@@ -1,4 +1,4 @@
-package com.FairMatch.FairMatch.dto;
+package com.FairMatch.FairMatch.dto.request;
 
 import com.FairMatch.FairMatch.model.SwipeStatus;
 import lombok.AllArgsConstructor;

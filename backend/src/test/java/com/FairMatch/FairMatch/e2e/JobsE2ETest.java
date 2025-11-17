@@ -1,6 +1,6 @@
 package com.FairMatch.FairMatch.e2e;
 
-import com.FairMatch.FairMatch.dto.JobsResponse;
+import com.FairMatch.FairMatch.dto.response.JobsResponse;
 import com.FairMatch.FairMatch.model.*;
 import com.FairMatch.FairMatch.repository.*;
 import org.junit.jupiter.api.*;

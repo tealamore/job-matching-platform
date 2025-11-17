@@ -16,3 +16,6 @@ __pycache__/
 # Editors
 .vscode/
 .idea/
+
+
+backend/src/main/resources/static/*

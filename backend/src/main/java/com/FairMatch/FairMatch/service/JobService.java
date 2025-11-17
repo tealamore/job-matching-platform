@@ -1,8 +1,8 @@
 package com.FairMatch.FairMatch.service;
 
-import com.FairMatch.FairMatch.dto.CreateJobRequest;
-import com.FairMatch.FairMatch.dto.InteractJobRequest;
-import com.FairMatch.FairMatch.dto.JobsResponse;
+import com.FairMatch.FairMatch.dto.request.CreateJobRequest;
+import com.FairMatch.FairMatch.dto.request.InteractJobRequest;
+import com.FairMatch.FairMatch.dto.response.JobsResponse;
 import com.FairMatch.FairMatch.exception.BadRequestException;
 import com.FairMatch.FairMatch.model.*;
 import com.FairMatch.FairMatch.repository.*;
@@ -134,6 +134,13 @@ public class JobService {
     uniqueJobs.addAll(jobsBySkills);
     uniqueJobs.removeIf(it -> alreadyApplied.contains(it.getId()));
     uniqueJobs.forEach(it -> it.setJobJobSeekers(Collections.emptyList()));
+
+    if (uniqueJobs.isEmpty()) {
+      return jobsRepository.findAll()
+        .stream()
+        .map(JobsResponse::new)
+        .toList();
+    }
 
     return uniqueJobs.stream()
       .map(JobsResponse::new)

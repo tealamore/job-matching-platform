@@ -9,6 +9,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -20,6 +25,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(JwtService jwtService, HttpSecurity http) throws Exception {
         http
+            .cors(cors -> cors.configurationSource(request -> {
+              CorsConfiguration config = new CorsConfiguration();
+              config.setAllowedOrigins(List.of("http://localhost:3000"));
+              config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+              config.setAllowCredentials(true);
+              config.setAllowedHeaders(List.of("*"));
+              return config;
+            }))
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/login").anonymous()
@@ -31,7 +44,7 @@ public class SecurityConfig {
                 .requestMatchers("/jobs/**").authenticated()
                 .requestMatchers("/business").authenticated()
                 .requestMatchers("/business/**").authenticated()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
             .addFilterBefore(new JwtAuthenticationFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
