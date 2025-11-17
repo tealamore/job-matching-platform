@@ -33,7 +33,7 @@ export default function RegisterCard({ onLogin }: { onLogin: (role: Role, rememb
 
   return (
     <div className="w-[420px] rounded-2xl border bg-white/95 p-8 shadow-sm">
-      <h1 className="text-xl font-semibold tracking-tight">Create account</h1>
+      <h1 className="text-xl font-semibold tracking-tight text-black">Create account</h1>
 
       <form onSubmit={submit} className="mt-6 space-y-4">
         <div>
@@ -42,7 +42,7 @@ export default function RegisterCard({ onLogin }: { onLogin: (role: Role, rememb
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20"
+            className="w-full rounded-lg border text-black px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20"
             placeholder="you@example.com"
             required
           />
@@ -53,7 +53,7 @@ export default function RegisterCard({ onLogin }: { onLogin: (role: Role, rememb
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20"
+            className="w-full rounded-lg border text-black px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20"
             placeholder="••••••••"
             required
           />
@@ -65,7 +65,7 @@ export default function RegisterCard({ onLogin }: { onLogin: (role: Role, rememb
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20"
+            className="w-full rounded-lg border text-black px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20"
             placeholder="name"
             required
           />
@@ -77,7 +77,7 @@ export default function RegisterCard({ onLogin }: { onLogin: (role: Role, rememb
             type="text"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20"
+            className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/20 text-black"
             placeholder="phone"
             required
           />
