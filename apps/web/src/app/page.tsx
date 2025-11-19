@@ -9,6 +9,7 @@ import LoginPage from "@/components/LoginPage";
 import DiscoverView from "@/components/DiscoverView";
 import RegisterCard from "@/components/RegisterCard";
 import axios from "axios";
+import { validateAuthToken } from "@/requests/requests";
 
 type Role = "JOB_SEEKER" | "BUSINESS";
 type View = "landing" | "login" | "register" | "discover";
@@ -40,24 +41,20 @@ export default function AppPage() {
 
   useEffect(() => {
     const authToken = getAuthToken();
-    console.log("Auth token:", authToken);
     if (authToken !== null) {
       if (isLoggedIn === false) {
-        (async () => {
-          try {
-            await axios.get('/api/auth/valid', {withCredentials: true});
+        validateAuthToken().then((valid) => {
+          if (valid) {
             setIsLoggedIn(true);
             setUserRole(localStorage.getItem("role") as Role);
             setView("discover");
-          } catch (err) {
-            console.error("failed to load jobs", err);
-            localStorage.removeItem("role");
+          } else {
             setIsLoggedIn(false);
             setUserRole(null);
             setView("landing");
-
-          } 
-        })();
+          }
+          setLoading(false);
+        });
       }
     } else {
       setView("landing");
@@ -65,7 +62,7 @@ export default function AppPage() {
     setLoading(false);
   }, []);
 
-  const handleLogin = (role: Role, remember: boolean) => {
+  const handleLogin = (role: Role) => {
     localStorage.setItem("role", role);
     setUserRole(role);
     setIsLoggedIn(true);

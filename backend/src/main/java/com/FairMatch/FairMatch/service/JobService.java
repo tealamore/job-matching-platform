@@ -104,6 +104,7 @@ public class JobService {
       .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
     if (!user.getUserType().equals(UserType.JOB_SEEKER)) {
+      System.out.println("User is not a job seeker");
       return getApplicantFeed(user);
     }
 
@@ -133,17 +134,18 @@ public class JobService {
     Set<Jobs> uniqueJobs = new HashSet<>(jobsByTitle);
     uniqueJobs.addAll(jobsBySkills);
     uniqueJobs.removeIf(it -> alreadyApplied.contains(it.getId()));
-    uniqueJobs.forEach(it -> it.setJobJobSeekers(Collections.emptyList()));
 
     if (uniqueJobs.isEmpty()) {
       return jobsRepository.findAll()
         .stream()
         .map(JobsResponse::new)
+        .peek(it -> it.setJobJobSeekers(Collections.emptyList()))
         .toList();
     }
 
     return uniqueJobs.stream()
       .map(JobsResponse::new)
+      .peek(it -> it.setJobJobSeekers(Collections.emptyList()))
       .toList();
   }
 

@@ -1,5 +1,6 @@
 // src/components/SwipeDeck.tsx
 'use client';
+import { interactWithJob } from '@/requests/requests';
 import axios from 'axios';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -75,21 +76,7 @@ export default function SwipeDeck<T extends WithId>({
       const item = items[index];
       setAnimating(dir);
 
-      var swipeStatus;
-      if (dir == 'right') {
-        swipeStatus = 'LIKE';
-      } else {
-        swipeStatus = 'DISLIKE';
-      }
-
-      try {
-        await axios.post('/api/jobs/interact', {
-          swipeStatus,
-          jobId: item.id
-        });
-      } catch (err) {
-        console.error("failed to load jobs", err);
-      } 
+      interactWithJob(item.id, dir);
 
       const el = topEl.current;
       const offX = (dir === 'right' ? 1 : -1) * (window.innerWidth + 240);
