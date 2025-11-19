@@ -36,12 +36,12 @@ export default function JobCard({
       <div className="flex items-start justify-between pb-3">
         <div className="flex items-center gap-3">
           <div>
-            <h3 className="text-base font-semibold leading-tight">{job.title}</h3>
-            <p className="text-xs text-gray-600">{job.company}</p>
+            <h3 className="text-base font-semibold leading-tight text-black">{job.title}</h3>
+            <p className="text-xs text-black">{job.company}</p>
           </div>
         </div>
         {job.salary && (
-          <span className="rounded-full border border-gray-200 bg-white/70 px-3 py-1 text-xs font-medium">
+          <span className="rounded-full border border-gray-200 bg-white/70 px-3 py-1 text-xs font-medium text-black">
             {job.salary}
           </span>
         )}
@@ -55,13 +55,13 @@ export default function JobCard({
         <div>
           {/* Summary */}
           {job.description && (
-            <p className="mt-3 text-sm text-gray-700">
+            <p className="mt-3 text-sm text-black">
               {job.description}
             </p>
           )}
 
           {/* Match bar (fast signal) */}
-          <div
+          {/* <div
             className="mt-3 flex items-center gap-2"
             role="meter"
             aria-valuemin={0}
@@ -75,8 +75,8 @@ export default function JobCard({
                 style={{ width: `${match.pct}%` }}
               />
             </div>
-            <span className="text-xs text-gray-600">{match.pct}% skills match</span>
-          </div>
+            <span className="text-xs text-black">{match.pct}% skills match</span>
+          </div> */}
 
           {/* Highlights (top 3) */}
           {match.highlights.length > 0 && (
@@ -96,7 +96,7 @@ export default function JobCard({
         {/* Right rail — shows on wider cards */}
         <aside className="hidden md:flex min-w-[7.5rem] flex-col items-end gap-3">
           {/* Circular match ring */}
-          <div
+          {/* <div
             className="relative h-12 w-12 rounded-full"
             style={{
               background: `conic-gradient(#10b981 ${match.pct}%, #e5e7eb 0)`,
@@ -107,7 +107,7 @@ export default function JobCard({
             <div className="absolute inset-1 rounded-full bg-white/90 grid place-items-center text-[10px] font-medium text-gray-700">
               {match.pct}%
             </div>
-          </div>
+          </div> */}
         </aside>
       </div>
     </Card>

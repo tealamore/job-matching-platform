@@ -5,7 +5,7 @@ import SwipeDeck, { type SwipeDirection } from '@/components/SwipeDeck';
 import EmployerCard, { type Employer } from '@/components/EmployerCard';
 import JobCard, { type Job } from '@/components/JobCard';
 import { sampleEmployers } from '@/data/sample';
-import axios from 'axios';
+import { fetchJobs } from '@/requests/requests';
 
 type Role = "JOB_SEEKER" | "BUSINESS";
 
@@ -86,16 +86,7 @@ export default function DiscoverView({
   );
 
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const response = await axios.get<Job[]>('/api/jobs/feed', {withCredentials: true});
-        setJobs(response.data);
-      } catch (err) {
-        console.error("failed to load jobs", err);
-      } 
-    }
-
-    fetchJobs()
+    fetchJobs().then(setJobs);
   }, [])
 
   return (

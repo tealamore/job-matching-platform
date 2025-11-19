@@ -1,11 +1,11 @@
 // src/components/LoginPage.tsx
 "use client";
 import { useState } from "react";
-import axios from 'axios';
+import { login } from "@/requests/requests";
 
 type Role = "JOB_SEEKER" | "BUSINESS";
 
-export default function LoginPage({ onLogin }: { onLogin: (role: Role, remember: boolean) => void }) {
+export default function LoginPage({ onLogin }: { onLogin: (role: Role) => void }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<Role>("JOB_SEEKER");
@@ -17,15 +17,10 @@ export default function LoginPage({ onLogin }: { onLogin: (role: Role, remember:
     setError("");
 
     try {
-      const response = await axios.post('/api/auth/login', {
-        email: username,
-        password
-      }, {
-        withCredentials: true
-      });
-      onLogin(response.data.role || role, response.data.remember || remember);
+      const data = await login(username, password);
+      onLogin(data.role || role);
     } catch (error: any) {
-      setError(error.response?.data?.message || "Invalid username or password");
+      setError("Invalid username or password");
     }
   };
 

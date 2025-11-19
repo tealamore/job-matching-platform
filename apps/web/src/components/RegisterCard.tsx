@@ -2,32 +2,25 @@
 "use client";
 
 import { useState } from "react";
-import axios from 'axios';
+import { register } from "@/requests/requests";
 
 type Role = "JOB_SEEKER" | "BUSINESS";
 
-export default function RegisterCard({ onLogin }: { onLogin: (role: Role, remember: boolean) => void }) {
+export default function RegisterCard({ onLogin }: { onLogin: (role: Role) => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
+  const [role, setRole] = useState<Role>("JOB_SEEKER");
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/auth/signup', {
-        email,
-        password,
-        name,
-        phone, 
-        userType: "JOB_SEEKER"
-      }, {
-        withCredentials: true
-      });
-      onLogin("JOB_SEEKER", false);
+      await register(email, password, name, phone, role);
+      onLogin(role);
     } catch (error: any) {
-      setError(error.response?.data?.message || "Invalid username or password");
+      setError("Invalid username or password");
     }
   };
 
