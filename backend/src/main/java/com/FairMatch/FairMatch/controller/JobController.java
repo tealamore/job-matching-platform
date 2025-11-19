@@ -50,9 +50,9 @@ public class JobController {
   }
 
   @GetMapping("/feed")
-  public List<JobsResponse> getJobFeed(HttpServletRequest request) {
+  public List<JobsResponse> getFeed(HttpServletRequest request) {
     String username = jwtService.getUsernameFromCookies(request.getCookies());
 
-    return jobService.getJobFeed(username);
+    return jobService.getFeed(username);
   }
 }

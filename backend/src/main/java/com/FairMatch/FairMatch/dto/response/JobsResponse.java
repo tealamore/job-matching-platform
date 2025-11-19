@@ -42,5 +42,4 @@ public class JobsResponse {
         this.jobJobSeekers = jobs.getJobJobSeekers().stream().map(JobJobSeekerResponse::new).toList();
       }
     }
-
 }

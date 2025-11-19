@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -35,7 +36,7 @@ public class Jobs {
   private User user;
 
   @OneToMany(mappedBy = "jobs", fetch = FetchType.LAZY)
-  private List<JobJobSeeker> jobJobSeekers = List.of();
+  private List<JobJobSeeker> jobJobSeekers = new ArrayList<>();
 
   public Jobs(UUID id, String title, String description, Double salary, User user, JobJobSeeker jobJobSeeker) {
     this.id = id;

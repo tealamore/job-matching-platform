@@ -99,12 +99,12 @@ public class JobService {
     return new JobsResponse(jobs);
   }
 
-  public List<JobsResponse> getJobFeed(String username) {
+  public List<JobsResponse> getFeed(String username) {
     User user = userRepository.findByEmail(username)
       .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
     if (!user.getUserType().equals(UserType.JOB_SEEKER)) {
-      throw new BadRequestException();
+      return getApplicantFeed(user);
     }
 
     List<String> desiredTitles = jobTitlesRepository.findByUserId(user.getId())
@@ -143,6 +143,13 @@ public class JobService {
     }
 
     return uniqueJobs.stream()
+      .map(JobsResponse::new)
+      .toList();
+  }
+
+  private List<JobsResponse> getApplicantFeed(User user) {
+    return jobsRepository.findAllByUserWithApplicants(user.getId())
+      .stream()
       .map(JobsResponse::new)
       .toList();
   }
