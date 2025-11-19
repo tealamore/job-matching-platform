@@ -18,6 +18,7 @@ import java.util.UUID;
 import static java.util.Collections.emptyList;
 import static java.util.List.*;
 import static java.util.Optional.empty;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -210,7 +211,7 @@ public class JobServiceTest {
     when(jobsRepository.findAllByTitleIn(List.of("Developer"))).thenReturn(List.of(job1));
     when(jobJobSeekerRepository.findAllByUser(mockUser)).thenReturn(emptyList());
 
-    List<JobsResponse> result = jobService.getJobFeed("seeker@example.com");
+    List<JobsResponse> result = jobService.getFeed("seeker@example.com");
 
     assertEquals(2, result.size());
     assertTrue(result.stream().anyMatch(r -> r.getId().equals(job1.getId())));
@@ -222,7 +223,7 @@ public class JobServiceTest {
     when(userRepository.findByEmail("unknown@example.com")).thenReturn(empty());
 
     assertThrows(UsernameNotFoundException.class,
-      () -> jobService.getJobFeed("unknown@example.com"));
+      () -> jobService.getFeed("unknown@example.com"));
   }
 
   @Test
@@ -231,8 +232,18 @@ public class JobServiceTest {
 
     when(userRepository.findByEmail("employer@example.com")).thenReturn(Optional.of(mockUser));
 
-    assertThrows(BadRequestException.class,
-      () -> jobService.getJobFeed("employer@example.com"));
+    Jobs job1 = new Jobs();
+    job1.setId(UUID.randomUUID());
+    Jobs job2 = new Jobs();
+    job2.setId(UUID.randomUUID());
+
+    when(jobsRepository.findAllByUserWithApplicants(mockUser.getId()))
+      .thenReturn(List.of(job1, job2));
+
+    List<JobsResponse> result = jobService.getFeed("employer@example.com");
+
+    assertThat(result).hasSize(2);
+    assertThat(result).containsExactlyInAnyOrder(new JobsResponse(job1), new JobsResponse(job2));
   }
 
   @Test
@@ -266,8 +277,8 @@ public class JobServiceTest {
     applied.setJobs(job1);
     when(jobJobSeekerRepository.findAllByUser(mockUser)).thenReturn(List.of(applied));
 
-    List<JobsResponse> result = jobService.getJobFeed("seeker@example.com");
+    List<JobsResponse> result = jobService.getFeed("seeker@example.com");
     assertEquals(1, result.size());
-    assertTrue(result.stream().anyMatch(r -> r.getId().equals(job2.getId())));
+    assertEquals(result.get(0).getId(), job2.getId());
   }
 }

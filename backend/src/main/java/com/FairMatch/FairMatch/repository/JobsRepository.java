@@ -4,6 +4,7 @@ import com.FairMatch.FairMatch.model.Jobs;
 import com.FairMatch.FairMatch.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,4 +32,7 @@ public interface JobsRepository extends JpaRepository<Jobs, UUID> {
   List<Jobs> findAllByJobJobSeekers_User_Id(UUID applicantId);
 
   List<Jobs> findAllByTitleIn(List<String> titles);
+
+  @Query("SELECT j FROM Jobs j LEFT JOIN FETCH j.jobJobSeekers WHERE j.id = :id")
+  List<Jobs> findAllByUserWithApplicants(@Param("id") UUID id);
 }
