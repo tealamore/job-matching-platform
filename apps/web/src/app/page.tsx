@@ -8,6 +8,8 @@ import LandingHero from "@/components/LandingHero";
 import LoginPage from "@/components/LoginPage";
 import DiscoverView from "@/components/DiscoverView";
 import RegisterCard from "@/components/RegisterCard";
+import { get } from "http";
+import axios from "axios";
 
 type Role = "JOB_SEEKER" | "BUSINESS";
 type View = "landing" | "login" | "register" | "discover";
@@ -32,14 +34,32 @@ export default function AppPage() {
     setShowSplash(false);
   };
 
-  // Persisted login (when Remember me was checked)
+  const getAuthToken = () => {
+    const match = document.cookie.match(new RegExp('(^| )authToken=([^;]+)'));
+    return match ? match[2] : null;
+  }
+
   useEffect(() => {
-    const remembered = localStorage.getItem("isAuthenticated");
-    const role = localStorage.getItem("role") as Role | null;
-    if (remembered === "true" && role) {
-      setIsLoggedIn(true);
-      setUserRole(role);
-      setView("discover");
+    const authToken = getAuthToken();
+    console.log("Auth token:", authToken);
+    if (authToken !== null) {
+      if (isLoggedIn === false) {
+        (async () => {
+          try {
+            await axios.get('/api/auth/valid', {withCredentials: true});
+            setIsLoggedIn(true);
+            setUserRole(localStorage.getItem("role") as Role);
+            setView("discover");
+          } catch (err) {
+            console.error("failed to load jobs", err);
+            localStorage.removeItem("role");
+            setIsLoggedIn(false);
+            setUserRole(null);
+            setView("landing");
+
+          } 
+        })();
+      }
     } else {
       setView("landing");
     }
@@ -48,8 +68,6 @@ export default function AppPage() {
 
   const handleLogin = (role: Role, remember: boolean) => {
     localStorage.setItem("role", role);
-    if (remember) localStorage.setItem("isAuthenticated", "true");
-    else localStorage.removeItem("isAuthenticated");
     setUserRole(role);
     setIsLoggedIn(true);
     setView("discover");
