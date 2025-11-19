@@ -8,7 +8,6 @@ import LandingHero from "@/components/LandingHero";
 import LoginPage from "@/components/LoginPage";
 import DiscoverView from "@/components/DiscoverView";
 import RegisterCard from "@/components/RegisterCard";
-import { get } from "http";
 import axios from "axios";
 
 type Role = "JOB_SEEKER" | "BUSINESS";
