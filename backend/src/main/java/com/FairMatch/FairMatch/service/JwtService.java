@@ -3,7 +3,6 @@ package com.FairMatch.FairMatch.service;
 import com.FairMatch.FairMatch.model.Auth;
 import com.FairMatch.FairMatch.util.JwtUtil;
 import jakarta.servlet.http.Cookie;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,16 +37,29 @@ public class JwtService {
         return cookie;
     }
 
-    public String getUsernameFromCookies(Cookie[] cookies) throws UsernameNotFoundException {
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (AUTH_COOKIE.equals(cookie.getName())) {
-                    String token = cookie.getValue();
-                    return getUsernameFromToken(token);
-                }
-            }
+    public Cookie deleteAuthCookie() {
+        Cookie cookie = new Cookie(AUTH_COOKIE, null);
+        cookie.setHttpOnly(false);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        return cookie;
+    }
+
+    public String getAuthToken(Cookie[] cookies) {
+      if (cookies != null) {
+        for (Cookie cookie : cookies) {
+          if (AUTH_COOKIE.equals(cookie.getName())) {
+            return cookie.getValue();
+          }
         }
-        throw new UsernameNotFoundException("User not found");
+      }
+      throw new UsernameNotFoundException("User not found");
+    }
+
+    public String getUsernameFromCookies(Cookie[] cookies) throws UsernameNotFoundException {
+        String token = getAuthToken(cookies);
+        return getUsernameFromToken(token);
     }
 
     public String getUsernameFromToken(String token) {

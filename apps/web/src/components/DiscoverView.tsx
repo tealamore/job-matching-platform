@@ -88,7 +88,7 @@ export default function DiscoverView({
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await axios.get<Job[]>('/jobs/feed', {withCredentials: true});
+        const response = await axios.get<Job[]>('/api/jobs/feed', {withCredentials: true});
         setJobs(response.data);
       } catch (err) {
         console.error("failed to load jobs", err);

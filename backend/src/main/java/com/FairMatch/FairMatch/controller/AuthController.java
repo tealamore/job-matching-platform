@@ -5,6 +5,7 @@ import com.FairMatch.FairMatch.dto.request.SignupRequest;
 import com.FairMatch.FairMatch.model.Auth;
 import com.FairMatch.FairMatch.service.AuthService;
 import com.FairMatch.FairMatch.service.JwtService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -61,5 +62,17 @@ public class AuthController {
         Cookie cookie = jwtService.generateAuthCookie(token);
         response.addCookie(cookie);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/valid")
+    public ResponseEntity<?> validateToken(HttpServletRequest request, HttpServletResponse response) {
+      String authToken = jwtService.getAuthToken(request.getCookies());
+
+      if (jwtService.validateToken(authToken)) {
+          return ResponseEntity.ok().build();
+      } else {
+          response.addCookie(jwtService.deleteAuthCookie());
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+      }
     }
 }
