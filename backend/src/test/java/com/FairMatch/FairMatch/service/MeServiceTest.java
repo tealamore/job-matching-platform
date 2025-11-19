@@ -23,6 +23,7 @@ public class MeServiceTest {
   private JobsRepository jobsRepository;
   private JobTitlesRepository jobTitlesRepository;
   private SkillsRepository skillsRepository;
+  private AuthRepository authRepository;
 
   private MeService meService;
 
@@ -32,7 +33,8 @@ public class MeServiceTest {
     jobsRepository = mock(JobsRepository.class);
     jobTitlesRepository = mock(JobTitlesRepository.class);
     skillsRepository = mock(SkillsRepository.class);
-    meService = new MeService(userRepository, jobsRepository, jobTitlesRepository, skillsRepository);
+    authRepository = mock(AuthRepository.class);
+    meService = new MeService(userRepository, jobsRepository, jobTitlesRepository, skillsRepository, authRepository);
 
     mockUser = User.builder()
       .id(UUID.randomUUID())

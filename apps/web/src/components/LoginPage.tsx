@@ -17,7 +17,7 @@ export default function LoginPage({ onLogin }: { onLogin: (role: Role, remember:
     setError("");
 
     try {
-      const response = await axios.post('/auth/login', {
+      const response = await axios.post('/api/auth/login', {
         email: username,
         password
       }, {

@@ -16,7 +16,7 @@ export default function RegisterCard({ onLogin }: { onLogin: (role: Role, rememb
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/auth/signup', {
+      const response = await axios.post('/api/auth/signup', {
         email,
         password,
         name,
