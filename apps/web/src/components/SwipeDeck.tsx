@@ -83,7 +83,7 @@ export default function SwipeDeck<T extends WithId>({
       }
 
       try {
-        await axios.post('/jobs/interact', {
+        await axios.post('/api/jobs/interact', {
           swipeStatus,
           jobId: item.id
         });

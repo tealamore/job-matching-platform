@@ -2,7 +2,7 @@ spring:
   application:
     name: FairMatch
   datasource:
-    url: jdbc:postgresql://localhost:5432/mydatabase
+    url: jdbc:postgresql://db:5432/mydatabase
     username: myuser
     password: secret
   jpa:
