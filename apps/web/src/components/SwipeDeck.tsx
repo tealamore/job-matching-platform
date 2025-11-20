@@ -63,13 +63,6 @@ export default function SwipeDeck<T extends WithId>({
     } as React.CSSProperties;
   }, [dx, dy]);
 
-  function canVibrate(n: unknown): n is Navigator & { vibrate: (p: number | number[]) => boolean } {
-    return !!n && typeof (n as Navigator).vibrate === 'function';
-  }
-  const vibrate = (ms: number) => {
-    if (typeof navigator !== 'undefined' && canVibrate(navigator)) navigator.vibrate(ms);
-  };
-
   const commitSwipe = useCallback(
     async (dir: SwipeDirection) => {
       if (index >= items.length) return;
@@ -93,11 +86,10 @@ export default function SwipeDeck<T extends WithId>({
         setIndex((i) => i + 1);
         onSwipe?.(dir, item);
         setToast(dir === 'right' ? 'Saved' : 'Dismissed');
-        vibrate(15);
         window.setTimeout(() => setToast(null), 1100);
       }, 300);
     },
-    [dy, index, items, onSwipe, vibrate]
+    [dy, index, items, onSwipe]
   );
 
   const topEl = useRef<HTMLDivElement | null>(null);
@@ -161,17 +153,6 @@ export default function SwipeDeck<T extends WithId>({
     }
   };
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (animating) return;
-      const k = e.key.toLowerCase();
-      if (k === 'arrowleft' || k === 'a') commitSwipe('left');
-      if (k === 'arrowright' || k === 'd') commitSwipe('right');
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [commitSwipe, animating]);
-
   // dynamic measuring
   useEffect(() => {
     const update = () => {
@@ -214,7 +195,6 @@ export default function SwipeDeck<T extends WithId>({
       className="relative select-none overflow-visible mx-auto"
       style={{ height, width, perspective: 1200 }}
     >
-      {/* Progress chip (top-right) */}
       {showChip && (
         <div className="pointer-events-none absolute right-2 top-2 z-[140]">
           <span className="rounded-full bg-white/90 px-2 py-1 text-xs font-medium text-gray-900 shadow ring-1 ring-black/5">
@@ -223,7 +203,6 @@ export default function SwipeDeck<T extends WithId>({
         </div>
       )}
 
-      {/* Stack area */}
       <div className="absolute inset-x-0 top-0" style={{ height: stackHeight }}>
         {visible.map((item, i) => {
           const isTop = i === 0;
@@ -311,39 +290,6 @@ export default function SwipeDeck<T extends WithId>({
                   className="h-full rounded-full transition-[width] duration-300"
                   style={{ width: `${progressPct}%`, background: 'linear-gradient(to right, #34d399, #10b981)' }}
                 />
-              </div>
-            )}
-
-            {showButtons && (
-              <div className="pointer-events-auto flex items-center justify-center gap-4">
-                <button
-                  className="relative grid h-12 w-12 place-items-center rounded-full bg-white/95 shadow-md ring-1 ring-black/10 transition active:scale-95 hover:shadow-lg"
-                  onClick={() => {
-                    setPulse('left');
-                    setTimeout(() => setPulse(null), 320);
-                    commitSwipe('left');
-                  }}
-                  aria-label="Dislike (Left)"
-                >
-                  {pulse === 'left' && (
-                    <span className="pointer-events-none absolute inset-0 rounded-full ring-4 ring-rose-300/70 animate-ping" />
-                  )}
-                  <span className="text-lg">👎</span>
-                </button>
-                <button
-                  className="relative grid h-12 w-12 place-items-center rounded-full bg-white/95 shadow-md ring-1 ring-black/10 transition active:scale-95 hover:shadow-lg"
-                  onClick={() => {
-                    setPulse('right');
-                    setTimeout(() => setPulse(null), 320);
-                    commitSwipe('right');
-                  }}
-                  aria-label="Like (Right)"
-                >
-                  {pulse === 'right' && (
-                    <span className="pointer-events-none absolute inset-0 rounded-full ring-4 ring-emerald-300/70 animate-ping" />
-                  )}
-                  <span className="text-lg">👍</span>
-                </button>
               </div>
             )}
           </div>

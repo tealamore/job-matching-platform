@@ -9,41 +9,13 @@ import { fetchJobs } from '@/requests/requests';
 
 type Role = "JOB_SEEKER" | "BUSINESS";
 
-function EndOfDeck({
-  total,
-  liked,
-  noped,
-}: {
-  total: number;
-  liked: number;
-  noped: number;
-}) {
-  const rate = total ? Math.round((liked / total) * 100) : 0;
+function EndOfDeck({}: {}) {
   return (
     <div className="grid h-full place-items-center">
       <div className="rounded-2xl border bg-white/90 p-8 text-center shadow-sm">
         <div className="text-3xl mb-1">🎉</div>
         <h3 className="text-xl font-semibold">You’re all caught up!</h3>
         <p className="mt-1 text-sm text-gray-600">Nice work — here’s how you did.</p>
-
-        <div className="mt-6 grid grid-cols-3 gap-4 max-w-md mx-auto">
-          <div className="rounded-xl border bg-white px-4 py-3">
-            <div className="text-lg font-semibold">{total}</div>
-            <div className="text-[11px] text-gray-600">Reviewed</div>
-          </div>
-          <div className="rounded-xl border bg-white px-4 py-3">
-            <div className="text-lg font-semibold">{liked}</div>
-            <div className="text-[11px] text-gray-600">Saved</div>
-          </div>
-          <div className="rounded-xl border bg-white px-4 py-3">
-            <div className="text-lg font-semibold">{noped}</div>
-            <div className="text-[11px] text-gray-600">Dismissed</div>
-          </div>
-        </div>
-
-        <div className="mt-4 text-sm text-gray-700">
-          Save rate: <span className="font-medium">{rate}%</span>
-        </div>
       </div>
     </div>
   );
@@ -59,30 +31,16 @@ export default function DiscoverView({
   const [lastAction, setLastAction] = useState<string | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
 
-  const [jobStats, setJobStats] = useState({ liked: 0, noped: 0 });
-  const [empStats, setEmpStats] = useState({ liked: 0, noped: 0 });
-
   const onSwipeJob = (dir: SwipeDirection, item: Job) => {
     setLastAction(`${dir === 'right' ? 'Saved' : 'Dismissed'}: ${item.title}`);
-    setJobStats((s) => ({
-      liked: s.liked + (dir === 'right' ? 1 : 0),
-      noped: s.noped + (dir === 'left' ? 1 : 0),
-    }));
   };
 
   const onSwipeEmployer = (dir: SwipeDirection, item: Employer) => {
     setLastAction(`${dir === 'right' ? 'Saved' : 'Dismissed'}: ${item.name}`);
-    setEmpStats((s) => ({
-      liked: s.liked + (dir === 'right' ? 1 : 0),
-      noped: s.noped + (dir === 'left' ? 1 : 0),
-    }));
   };
 
-  const jobEmpty = (
-    <EndOfDeck total={jobStats.liked + jobStats.noped} liked={jobStats.liked} noped={jobStats.noped} />
-  );
-  const empEmpty = (
-    <EndOfDeck total={empStats.liked + empStats.noped} liked={empStats.liked} noped={empStats.noped} />
+  const empty = (
+    <EndOfDeck />
   );
 
   useEffect(() => {
@@ -118,7 +76,7 @@ export default function DiscoverView({
             controlsInside
             showButtons={true}
             progressVariant="chip"
-            emptyState={jobEmpty}
+            emptyState={empty}
             renderItem={(job) => <JobCard job={job} />}
           />
         ) : (
@@ -129,7 +87,7 @@ export default function DiscoverView({
             controlsInside
             showButtons={false}
             progressVariant="chip"
-            emptyState={empEmpty}
+            emptyState={empty}
             renderItem={(employer) => <EmployerCard employer={employer} />}
           />
         )}
