@@ -74,9 +74,7 @@ export default function RegisterCard({ onLogin }: { onLogin: (role: Role) => voi
             placeholder="phone"
             required
           />
-        </div>
-
-        
+        </div>        
 
         <button
           type="submit"
