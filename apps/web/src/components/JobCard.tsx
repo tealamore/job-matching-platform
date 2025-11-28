@@ -14,7 +14,6 @@ export type Job = {
 
 export default function JobCard({
   job,
-  /** Feed the signed-in user’s skills for a real signal (fallbacks to a sane set). */
   mySkills = ['React', 'TypeScript', 'Node.js', 'Postgres', 'Tailwind'],
 }: {
   job: Job;
@@ -25,14 +24,12 @@ export default function JobCard({
     const tech = (job.tags ?? []).map(s => s.toLowerCase());
     const hits = tech.filter(t => mine.has(t)).length;
     const pct = tech.length ? Math.round((hits / tech.length) * 100) : 0;
-    // Put the most relevant tags first.
     const sorted = job.tags ?? []
     return { hits, total: tech.length, pct, highlights: sorted };
   }, [job.tags, mySkills]);
 
   return (
     <Card className="flex h-full flex-col p-5">
-      {/* Top: title + company */}
       <div className="flex items-start justify-between pb-3">
         <div className="flex items-center gap-3">
           <div>
@@ -49,11 +46,8 @@ export default function JobCard({
 
       <div className="h-px w-full bg-gradient-to-r from-gray-200/70 to-transparent" />
 
-      {/* Two-column on wide cards: content + compact stats rail */}
       <div className="mt-3 grid gap-4 md:grid-cols-[1fr_auto]">
-        {/* Main column */}
         <div>
-          {/* Summary */}
           {job.description && (
             <p className="mt-3 text-sm text-black">
               {job.description}
@@ -78,7 +72,6 @@ export default function JobCard({
             <span className="text-xs text-black">{match.pct}% skills match</span>
           </div> */}
 
-          {/* Highlights (top 3) */}
           {match.highlights.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
               {match.highlights.map(t => (
@@ -93,7 +86,6 @@ export default function JobCard({
           )}
         </div>
 
-        {/* Right rail — shows on wider cards */}
         <aside className="hidden md:flex min-w-[7.5rem] flex-col items-end gap-3">
           {/* Circular match ring */}
           {/* <div

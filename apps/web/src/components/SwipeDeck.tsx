@@ -232,25 +232,6 @@ export default function SwipeDeck<T extends WithId>({
               aria-roledescription={isTop ? 'Tinder-like swipable card' : undefined}
             >
               <div className="h-full w-full">{renderItem(item)}</div>
-
-              {isTop && (
-                <>
-                  <div
-                    className={`pointer-events-none absolute left-4 top-4 rounded-md border-2 px-3 py-1 text-sm font-semibold tracking-widest transition-opacity ${
-                      dx > 18 ? 'border-emerald-500 text-emerald-600 opacity-100' : 'opacity-0'
-                    }`}
-                  >
-                    LIKE
-                  </div>
-                  <div
-                    className={`pointer-events-none absolute right-4 top-4 rounded-md border-2 px-3 py-1 text-sm font-semibold tracking-widest transition-opacity ${
-                      dx < -18 ? 'border-rose-500 text-rose-600 opacity-100' : 'opacity-0'
-                    }`}
-                  >
-                    NOPE
-                  </div>
-                </>
-              )}
             </div>
           );
         })}
@@ -258,9 +239,8 @@ export default function SwipeDeck<T extends WithId>({
 
       {/* Toast — never blocks clicks */}
       <div
-        className={`pointer-events-none absolute left-1/2 -translate-x-1/2 transition-opacity duration-200 ${
-          toast ? 'opacity-100' : 'opacity-0'
-        } z-[200]`}
+        className={`pointer-events-none absolute left-1/2 -translate-x-1/2 transition-opacity duration-200 ${toast ? 'opacity-100' : 'opacity-0'
+          } z-[200]`}
         style={{ bottom: reservedPx + 36 }}
         aria-live="polite"
       >

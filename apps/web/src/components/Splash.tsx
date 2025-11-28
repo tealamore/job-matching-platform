@@ -56,7 +56,6 @@ export default function Splash({
       ].join(" ")}
       style={{ transitionDuration: `${fadeOut}ms` }}
     >
-      {/* Subtle glows */}
       <div className="pointer-events-none absolute -left-32 top-24 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
       <div className="pointer-events-none absolute -right-28 bottom-16 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
 

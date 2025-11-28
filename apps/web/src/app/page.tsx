@@ -84,7 +84,7 @@ export default function AppPage() {
   if (loading) return <div className="p-6 text-center">Loading...</div>;
 
   return (
-    <main className="relative min-h-screen overflow-hidden">
+    <main className="relative min-h-screen overflow-hidden text-black">
       <AppBackground />
 
       {showSplash && (

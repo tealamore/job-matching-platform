@@ -12,9 +12,8 @@ function EndOfDeck({ }: {}) {
   return (
     <div className="grid h-full place-items-center">
       <div className="rounded-2xl border bg-white/90 p-8 text-center shadow-sm">
-        <div className="text-3xl mb-1">🎉</div>
-        <h3 className="text-xl font-semibold">You’re all caught up!</h3>
-        <p className="mt-1 text-sm text-gray-600">Nice work — here’s how you did.</p>
+        <h3 className="text-xl font-semibold text-black">You're all caught up!</h3>
+        <p className="mt-1 text-sm text-black">Nice work</p>
       </div>
     </div>
   );

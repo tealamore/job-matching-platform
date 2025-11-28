@@ -190,13 +190,13 @@ function HeroStats() {
   );
 }
 
-type DemoCard = { title: string; meta: string; chips: string[] };
+type DemoCard = { title: string; businessName: string; chips: string[] };
 
 function DeckPreview() {
   const cards: DemoCard[] = [
-    { title: "Frontend Engineer", meta: "Acme • Remote", chips: ["React", "TypeScript", "Next.js"] },
-    { title: "Data Engineer", meta: "Wayfinder Labs • Remote", chips: ["Python", "Airflow", "dbt"] },
-    { title: "React Native Engineer", meta: "Trident Mobile • Austin, TX", chips: ["RN", "iOS", "Android"] },
+    { title: "Frontend Engineer", businessName: "Acme", chips: ["React", "TypeScript", "Next.js"] },
+    { title: "Data Engineer", businessName: "Wayfinder Labs", chips: ["Python", "Airflow", "dbt"] },
+    { title: "React Native Engineer", businessName: "Trident Mobile", chips: ["RN", "iOS", "Android"] },
   ];
 
   const [order, setOrder] = useState<[number, number, number]>([0, 1, 2]);
@@ -241,7 +241,7 @@ function DeckPreview() {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="grid h-[clamp(34px,3vw,42px)] w-[clamp(34px,3vw,42px)] place-items-center rounded-lg bg-white text-[clamp(.65rem,.95vw,.78rem)] font-semibold shadow-sm ring-1 ring-gray-200">
-                    {c.title.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase()}
+                    {c.title}
                   </div>
                   <div>
                     <p className="leading-tight text-gray-900 font-semibold text-[clamp(.98rem,1.25vw,1.08rem)]">
@@ -251,11 +251,11 @@ function DeckPreview() {
                   </div>
                 </div>
                 <span className="rounded-full border border-gray-200 bg-white/85 px-2 py-1 text-[clamp(.62rem,.9vw,.7rem)] font-medium">
-                  $120k–$150k
+                  $120k
                 </span>
               </div>
 
-              <div className="mt-[1rem] flex flex-wrap gap-2">
+              {/* <div className="mt-[1rem] flex flex-wrap gap-2">
                 {c.chips.map((chip) => (
                   <span
                     key={chip}
@@ -264,26 +264,8 @@ function DeckPreview() {
                     {chip}
                   </span>
                 ))}
-              </div>
-
-              <div className="mt-auto flex items-center justify-between pt-[1.2rem]">
-                <span className="text-gray-500 text-[clamp(.62rem,.9vw,.72rem)]">Posted 2d ago</span>
-                <div className="flex gap-2">
-                  <button className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-[clamp(.65rem,.95vw,.78rem)]">
-                    ☆ Save
-                  </button>
-                  <button className="rounded-lg bg-gray-900 px-3 py-1.5 text-white text-[clamp(.65rem,.95vw,.78rem)]">
-                    View details
-                  </button>
-                </div>
-              </div>
+              </div> */}
             </div>
-
-            {isTop && swipe && (
-              <div className="pointer-events-none absolute left-4 top-4 rounded-md border-2 border-emerald-500 px-2 py-0.5 text-[clamp(.6rem,.9vw,.72rem)] font-semibold tracking-widest text-emerald-600">
-                LIKE
-              </div>
-            )}
           </div>
         );
       })}
