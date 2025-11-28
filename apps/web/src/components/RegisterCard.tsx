@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { register } from "@/requests/requests";
 
-type Role = "JOB_SEEKER" | "BUSINESS";
+type Role = "Job Seeker" | "Employer";
 
 export default function RegisterCard({ onLogin }: { onLogin: (role: Role) => void }) {
   const [email, setEmail] = useState("");
@@ -12,12 +12,12 @@ export default function RegisterCard({ onLogin }: { onLogin: (role: Role) => voi
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
-  const [role, setRole] = useState<Role>("JOB_SEEKER");
+  const [role, setRole] = useState<Role>("Job Seeker");
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await register(email, password, name, phone, role);
+      await register(email, password, name, phone, role === "Job Seeker" ? "JOB_SEEKER" : "BUSINESS");
       onLogin(role);
     } catch (error: any) {
       setError("Invalid username or password");
@@ -26,7 +26,11 @@ export default function RegisterCard({ onLogin }: { onLogin: (role: Role) => voi
 
   return (
     <div className="w-[420px] rounded-2xl border bg-white/95 p-8 shadow-sm">
-      <h1 className="text-xl font-semibold tracking-tight text-black">Create account</h1>
+      <h1 className="text-xl font-semibold tracking-tight text-black">Create account as {role}</h1>
+
+      <button className="mt-2 text-sm text-black" onClick={() => setRole(role === "Job Seeker" ? "Employer" : "Job Seeker")}>
+        Did you mean to sign up as {role === "Job Seeker" ? "Employer" : "Job Seeker"}?
+      </button>
 
       <form onSubmit={submit} className="mt-6 space-y-4">
         <div>
@@ -74,7 +78,7 @@ export default function RegisterCard({ onLogin }: { onLogin: (role: Role) => voi
             placeholder="phone"
             required
           />
-        </div>        
+        </div>
 
         <button
           type="submit"
@@ -82,6 +86,8 @@ export default function RegisterCard({ onLogin }: { onLogin: (role: Role) => voi
         >
           Sign up
         </button>
+
+        {error && <p className="text-red-500">{error}</p>}
       </form>
     </div>
   );
