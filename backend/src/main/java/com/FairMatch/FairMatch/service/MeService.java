@@ -6,7 +6,6 @@ import com.FairMatch.FairMatch.exception.BadRequestException;
 import com.FairMatch.FairMatch.model.*;
 import com.FairMatch.FairMatch.repository.*;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -69,7 +68,7 @@ public class MeService {
   }
 
   @Transactional
-  public void updateMe(String username, UpdateMeRequest updateMeRequest) {
+  public Auth updateMe(String username, UpdateMeRequest updateMeRequest) {
     User user = userRepository.findByEmail(username)
       .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -91,6 +90,8 @@ public class MeService {
       auth.setPassword(updateMeRequest.getPassword());
 
     authRepository.save(auth);
+
+    return auth;
   }
 
   public void removeSkill(String username, String skill) {

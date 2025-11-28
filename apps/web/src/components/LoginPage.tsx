@@ -65,19 +65,6 @@ export default function LoginPage({ onLogin }: { onLogin: (role: Role) => void }
             />
           </div>
 
-          <div className="flex items-center justify-between text-sm">
-            <label className="inline-flex items-center gap-2 text-white/90">
-              <input
-                type="checkbox"
-                checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
-                className="h-4 w-4 rounded border-white/40 bg-white/20"
-              />
-              Remember me
-            </label>
-            <a href="#" className="text-white/90 underline-offset-2 hover:underline">Forgot password?</a>
-          </div>
-
           {error && <p className="text-sm font-medium text-rose-100">{error}</p>}
 
           <button
@@ -86,10 +73,6 @@ export default function LoginPage({ onLogin }: { onLogin: (role: Role) => void }
           >
             Sign in
           </button>
-
-          <p className="text-center text-xs text-white/80 mt-2">
-            Demo: <span className="font-mono">admin</span> / <span className="font-mono">password123</span>
-          </p>
         </form>
       </div>
     </div>

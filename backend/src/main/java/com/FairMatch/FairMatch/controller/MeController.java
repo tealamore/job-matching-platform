@@ -1,13 +1,18 @@
 package com.FairMatch.FairMatch.controller;
 
-import com.FairMatch.FairMatch.dto.request.InteractJobRequest;
 import com.FairMatch.FairMatch.dto.request.UpdateMeRequest;
+import com.FairMatch.FairMatch.dto.response.AuthResponse;
 import com.FairMatch.FairMatch.dto.response.UserResponse;
+import com.FairMatch.FairMatch.model.Auth;
 import com.FairMatch.FairMatch.model.Jobs;
+import com.FairMatch.FairMatch.model.UserType;
 import com.FairMatch.FairMatch.service.JwtService;
 import com.FairMatch.FairMatch.service.MeService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,10 +45,22 @@ public class MeController {
   }
 
   @PostMapping("/")
-  public void updateMe(HttpServletRequest request, @Valid @RequestBody UpdateMeRequest updateMeRequest) {
+  public ResponseEntity<AuthResponse> updateMe(HttpServletRequest request,
+                                               @Valid @RequestBody UpdateMeRequest updateMeRequest,
+                                               HttpServletResponse response) {
     String username = jwtService.getUsernameFromCookies(request.getCookies());
 
-    meService.updateMe(username, updateMeRequest);
+    Auth user = meService.updateMe(username, updateMeRequest);
+
+    String token = jwtService.generateToken(user);
+    Cookie cookie = jwtService.generateAuthCookie(token);
+    response.addCookie(cookie);
+
+    AuthResponse authResponse = AuthResponse.builder()
+      .userType(UserType.valueOf(user.getRole()))
+      .build();
+    return ResponseEntity.ok()
+      .body(authResponse);
   }
 
   @PostMapping("/title")

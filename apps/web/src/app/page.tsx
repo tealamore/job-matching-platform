@@ -22,6 +22,13 @@ export default function AppPage() {
   const [view, setView] = useState<View>("landing");
 
   const [showSplash, setShowSplash] = useState(false);
+
+  const setViewWrapper = (view: View) => {
+    const didChange = checkToken();
+    if (!!didChange) return;
+    setView(view);
+  };
+
   useEffect(() => {
     const seen = sessionStorage.getItem("splashSeen");
     if (!seen) setShowSplash(true);
@@ -37,33 +44,34 @@ export default function AppPage() {
   }
 
   useEffect(() => {
-    const authToken = getAuthToken();
-    if (authToken !== null) {
-      if (isLoggedIn === false) {
-        validateAuthToken().then((valid) => {
-          if (valid) {
-            setIsLoggedIn(true);
-            setUserRole(localStorage.getItem("role") as Role);
-            setView("discover");
-          } else {
-            setIsLoggedIn(false);
-            setUserRole(null);
-            setView("landing");
-          }
-          setLoading(false);
-        });
-      }
-    } else {
-      setView("landing");
-    }
+    checkToken();
     setLoading(false);
   }, []);
+
+  const checkToken: () => boolean = () => {
+    const authToken = getAuthToken();
+    if (authToken !== null) {
+      validateAuthToken().then((valid) => {
+        if (valid) {
+          setIsLoggedIn(true);
+          setUserRole(localStorage.getItem("role") as Role);
+          return false;
+        } else {
+          setIsLoggedIn(false);
+          setUserRole(null);
+          setView("landing");
+          return true;
+        }
+      });
+    }
+    return false;
+  }
 
   const handleLogin = (role: Role) => {
     localStorage.setItem("role", role);
     setUserRole(role);
     setIsLoggedIn(true);
-    setView("discover");
+    setViewWrapper("discover");
   };
 
   const handleLogout = () => {
@@ -72,16 +80,16 @@ export default function AppPage() {
     localStorage.removeItem("isAuthenticated");
     setIsLoggedIn(false);
     setUserRole(null);
-    setView("landing");
+    setViewWrapper("landing");
   };
 
-  const onExplore = () => setView(isLoggedIn ? "discover" : "login");
-  const onLogin = () => setView("login");
-  const onCreate = () => setView("register");
-  const onSettings = () => setView("settings");
-  const onBackFromSettings = () => setView("discover");
+  const onExplore = () => setViewWrapper(isLoggedIn ? "discover" : "login");
+  const onLogin = () => setViewWrapper("login");
+  const onCreate = () => setViewWrapper("register");
+  const onSettings = () => setViewWrapper("settings");
+  const onBackFromSettings = () => setViewWrapper("discover");
 
-  if (loading) return <div className="p-6 text-center">Loading...</div>;
+  if (loading) return <div className="p-6 text-center">Loading</div>;
 
   return (
     <main className="relative min-h-screen overflow-hidden text-black">

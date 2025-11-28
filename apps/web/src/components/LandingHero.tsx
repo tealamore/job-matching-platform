@@ -241,18 +241,26 @@ function DeckPreview() {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="grid h-[clamp(34px,3vw,42px)] w-[clamp(34px,3vw,42px)] place-items-center rounded-lg bg-white text-[clamp(.65rem,.95vw,.78rem)] font-semibold shadow-sm ring-1 ring-gray-200">
-                    {c.title}
+                    {c.title.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="leading-tight text-gray-900 font-semibold text-[clamp(.98rem,1.25vw,1.08rem)]">
+                    <p className="leading-tight font-semibold text-[clamp(.98rem,1.25vw,1.08rem)]">
                       {c.title}
                     </p>
-                    <p className="text-gray-600 text-[clamp(.68rem,.95vw,.75rem)]">{c.meta}</p>
+                    <p className="text-[clamp(.68rem,.95vw,.75rem)]">{c.businessName}</p>
                   </div>
                 </div>
                 <span className="rounded-full border border-gray-200 bg-white/85 px-2 py-1 text-[clamp(.62rem,.9vw,.7rem)] font-medium">
                   $120k
                 </span>
+              </div>
+              <div className="mt-[2rem]">
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer eu tincidunt ligula. Integer ac erat eget sapien commodo posuere. In purus lorem, maximus viverra felis a, posuere consequat nulla. Donec elementum faucibus placerat. In at felis nisi. Mauris a neque finibus, consectetur orci non, ultrices eros. Sed vitae diam a nunc molestie convallis in vitae risus. Maecenas lectus lacus, faucibus id feugiat eget, pharetra non tortor. Nunc libero diam, ullamcorper quis justo in, ullamcorper convallis sem. Interdum et malesuada fames ac ante ipsum primis in faucibus. In elit turpis, cursus sit amet eleifend in, euismod non urna.
+                </p>
+                <p className="mt-[1rem]">
+                  Nunc in mollis justo. Integer pharetra auctor turpis, non fringilla lectus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nulla eu lacus vestibulum nibh blandit dignissim quis vel tellus. Cras ut dapibus ante. Sed accumsan posuere tincidunt. Vestibulum pulvinar euismod eros, ac mattis magna sodales vel. Ut imperdiet felis orci, ut malesuada nulla luctus sed. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+                </p>
               </div>
 
               {/* <div className="mt-[1rem] flex flex-wrap gap-2">
