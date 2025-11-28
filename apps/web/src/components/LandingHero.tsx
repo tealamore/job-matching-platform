@@ -65,7 +65,7 @@ export default function LandingHero({
 
           <p className="mt-[1rem] max-w-[68ch] text-white/90 leading-relaxed text-[clamp(1rem,1.4vw,1.15rem)]">
             A modern, swipe-first way to discover roles and companies. Like it?
-            Swipe right. Not a fit? Swipe left. It’s that simple.
+            Swipe right. Not a fit? Swipe left. It's that simple.
           </p>
 
           <div className="mt-[2rem] flex flex-wrap items-center gap-[0.8rem]">
