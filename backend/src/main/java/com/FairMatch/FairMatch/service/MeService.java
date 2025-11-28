@@ -8,6 +8,7 @@ import com.FairMatch.FairMatch.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,14 +21,16 @@ public class MeService {
   private final JobTitlesRepository jobTitlesRepository;
   private final SkillsRepository skillsRepository;
   private final AuthRepository authRepository;
+  private final BCryptPasswordEncoder passwordEncoder;
 
   @Autowired
-  public MeService(UserRepository userRepository, JobsRepository jobsRepository, JobTitlesRepository jobTitlesRepository, SkillsRepository skillsRepository, AuthRepository authRepository) {
+  public MeService(UserRepository userRepository, JobsRepository jobsRepository, JobTitlesRepository jobTitlesRepository, SkillsRepository skillsRepository, AuthRepository authRepository, BCryptPasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
     this.jobsRepository = jobsRepository;
     this.jobTitlesRepository = jobTitlesRepository;
     this.skillsRepository = skillsRepository;
     this.authRepository = authRepository;
+    this.passwordEncoder = passwordEncoder;
   }
 
   public UserResponse getMe(String username) {
@@ -87,7 +90,7 @@ public class MeService {
     if (updateMeRequest.getEmail() != null && !updateMeRequest.getEmail().isBlank())
       auth.setUsername(updateMeRequest.getEmail());
     if (updateMeRequest.getPassword() != null && !updateMeRequest.getPassword().isBlank())
-      auth.setPassword(updateMeRequest.getPassword());
+      auth.setPassword(passwordEncoder.encode(updateMeRequest.getPassword()));
 
     authRepository.save(auth);
 
