@@ -6,7 +6,6 @@ export const fetchJobs = async () => {
         const response = await axios.get<Job[]>('/api/jobs/feed', { withCredentials: true });
         return response.data;
     } catch (err) {
-        console.error("failed to load jobs", err);
         return [];
     }
 };
@@ -21,31 +20,30 @@ export const interactWithJob = async (jobId: string, action: "right" | "left") =
 
     try {
         await axios.post('/api/jobs/interact', {
-          swipeStatus,
-          jobId
-        }, {withCredentials: true});
+            swipeStatus,
+            jobId
+        }, { withCredentials: true });
     } catch (err) {
-        console.error("failed to load jobs", err);
     }
 };
 
 export const validateAuthToken = async () => {
     try {
-        await axios.get('/api/auth/valid', {withCredentials: true});
+        await axios.get('/api/auth/valid', { withCredentials: true });
         return true;
     } catch (err) {
         localStorage.removeItem("role");
         return false;
-    } 
+    }
 }
 
 export const login = async (email: string, password: string) => {
     const response = await axios.post('/api/auth/login', {
         email,
         password
-      }, {
+    }, {
         withCredentials: true
-      });
+    });
 
     return response.data;
 };
@@ -55,11 +53,38 @@ export const register = async (email: string, password: string, name: string, ph
         email,
         password,
         name,
-        phone, 
+        phone,
         userType
-      }, {
+    }, {
         withCredentials: true
-      });
+    });
 
+    return response.data;
+};
+
+export const fetchMyJobs = async () => {
+    const response = await axios.get('/api/me/jobs', { withCredentials: true });
+    return response.data;
+};
+
+export const getMe = async () => {
+    const response = await axios.get('/api/me', { withCredentials: true });
+    return response.data;
+};
+
+export const updateMe = async (data: { name: string; email: string; phone: string; password?: string }) => {
+    const response = await axios.post('/api/me/', data, { withCredentials: true });
+    return response.data;
+};
+
+export const createJob = async (title: string, description: string, salary: number, tags: string[]) => {
+    const response = await axios.post('/api/jobs', {
+        title,
+        description,
+        salary,
+        tags
+    }, {
+        withCredentials: true
+    });
     return response.data;
 };

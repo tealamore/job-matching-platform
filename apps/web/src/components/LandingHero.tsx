@@ -12,7 +12,6 @@ export default function LandingHero({
   onLogin: () => void;
   onCreate: () => void;
 }) {
-  // Measure sticky header height so the hero exactly fills the rest of the viewport.
   const headerRef = useRef<HTMLElement | null>(null);
   const [headerH, setHeaderH] = useState(64);
   useEffect(() => {
@@ -29,7 +28,6 @@ export default function LandingHero({
 
   return (
     <>
-      {/* Sticky nav (fluid sizing) */}
       <header
         ref={headerRef}
         className="sticky top-0 z-50 mx-auto flex w-screen items-center justify-between px-[4vw] py-[clamp(.8rem,1.4vw,1.2rem)]"
@@ -45,12 +43,6 @@ export default function LandingHero({
 
         <nav className="flex items-center gap-[0.6rem]">
           <button
-            onClick={onExplore}
-            className="rounded-lg bg-white/10 px-[clamp(12px,1vw,16px)] py-[clamp(8px,.8vw,10px)] text-[clamp(.82rem,1vw,.92rem)] text-white backdrop-blur transition hover:bg-white/20"
-          >
-            Explore
-          </button>
-          <button
             onClick={onLogin}
             className="rounded-lg bg-white px-[clamp(12px,1vw,16px)] py-[clamp(8px,.8vw,10px)] text-[clamp(.82rem,1vw,.92rem)] font-medium text-gray-900 transition hover:shadow-sm active:translate-y-px"
           >
@@ -59,14 +51,11 @@ export default function LandingHero({
         </nav>
       </header>
 
-      {/* Hero fills viewport minus the sticky header */}
       <section
         className="mx-auto grid w-screen grid-cols-1 content-center gap-[min(6vh,3rem)] px-[4vw] py-[clamp(3vh,6vh,7vh)] md:grid-cols-[55%_45%]"
         style={{ minHeight: `calc(100dvh - ${headerH}px)` }}
       >
-        {/* Left column */}
         <div className="max-w-none pr-0 md:pr-[2vw]">
-          {/* Balanced heading so “next” doesn’t end up alone */}
           <h1
             className="font-black tracking-tight text-white leading-[0.98] text-[clamp(2.6rem,6vw,4.4rem)]"
             style={{ textWrap: "balance" } as React.CSSProperties}
@@ -94,7 +83,6 @@ export default function LandingHero({
             </button>
           </div>
 
-          {/* Social proof (more authentic) */}
           <div className="mt-[1.2rem] flex flex-wrap items-center gap-[0.9rem]">
             <AvatarRow />
             <span className="text-[clamp(.72rem,1vw,.82rem)] text-white/80">
@@ -102,7 +90,6 @@ export default function LandingHero({
             </span>
           </div>
 
-          {/* Value props — simple, readable bullets (no “glass button” look) */}
           <ul
             role="list"
             className="mt-[1.2rem] grid max-w-[70ch] grid-cols-1 gap-[0.5rem] text-white/95 text-[clamp(.95rem,1.15vw,1.05rem)] md:grid-cols-3"
@@ -119,17 +106,14 @@ export default function LandingHero({
             ))}
           </ul>
 
-          {/* Optional: quick stats that scale with width */}
           <HeroStats />
         </div>
 
-        {/* Right column — auto-swiping preview */}
         <div className="relative mx-auto w-full">
           <DeckPreview />
         </div>
       </section>
 
-      {/* Right-swipe animation (center → right) */}
       <style jsx>{`
         @keyframes card-swipe-right {
           0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
@@ -145,9 +129,6 @@ export default function LandingHero({
   );
 }
 
-/* --------------------------- helpers --------------------------- */
-
-/** Authentic-looking mini avatars */
 function AvatarRow() {
   const palette = useMemo(
     () => [
@@ -187,9 +168,7 @@ function AvatarRow() {
   );
 }
 
-/** Subtle, fluid hero stats */
 function HeroStats() {
-  // fun little ticker
   const [matches, setMatches] = useState(5123);
   useEffect(() => {
     const id = setInterval(() => setMatches((m) => m + Math.floor(Math.random() * 3)), 1600);
@@ -213,7 +192,6 @@ function HeroStats() {
 
 type DemoCard = { title: string; meta: string; chips: string[] };
 
-/** Auto-swiping deck preview that feels like real cards */
 function DeckPreview() {
   const cards: DemoCard[] = [
     { title: "Frontend Engineer", meta: "Acme • Remote", chips: ["React", "TypeScript", "Next.js"] },
@@ -221,7 +199,6 @@ function DeckPreview() {
     { title: "React Native Engineer", meta: "Trident Mobile • Austin, TX", chips: ["RN", "iOS", "Android"] },
   ];
 
-  // Always swipe center → right
   const [order, setOrder] = useState<[number, number, number]>([0, 1, 2]);
   const [swipe, setSwipe] = useState(false);
   useEffect(() => {
@@ -242,7 +219,6 @@ function DeckPreview() {
       style={{ perspective: 1200 }}
       aria-hidden
     >
-      {/* subtle “stack shadow” to sell the illusion */}
       <div className="absolute inset-x-[6%] bottom-[2%] h-[2.2%] rounded-[999px] bg-black/10 blur-md" />
 
       {order.map((idx, i) => {
@@ -254,7 +230,6 @@ function DeckPreview() {
             className={[
               "absolute inset-0 rounded-2xl bg-white shadow-[0_10px_30px_rgba(0,0,0,.12)] ring-1 ring-black/5 backdrop-blur-sm",
               "transition-transform duration-500 will-change-transform",
-              // percent-based stack so it scales cleanly
               isTop ? "" : i === 1 ? "translate-y-[3%] scale-[.986]" : "translate-y-[6%] scale-[.972]",
             ].join(" ")}
             style={{
@@ -263,7 +238,6 @@ function DeckPreview() {
             }}
           >
             <div className="flex h-full flex-col p-[4.5%]">
-              {/* header */}
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="grid h-[clamp(34px,3vw,42px)] w-[clamp(34px,3vw,42px)] place-items-center rounded-lg bg-white text-[clamp(.65rem,.95vw,.78rem)] font-semibold shadow-sm ring-1 ring-gray-200">
@@ -281,7 +255,6 @@ function DeckPreview() {
                 </span>
               </div>
 
-              {/* chips */}
               <div className="mt-[1rem] flex flex-wrap gap-2">
                 {c.chips.map((chip) => (
                   <span
@@ -293,7 +266,6 @@ function DeckPreview() {
                 ))}
               </div>
 
-              {/* footer */}
               <div className="mt-auto flex items-center justify-between pt-[1.2rem]">
                 <span className="text-gray-500 text-[clamp(.62rem,.9vw,.72rem)]">Posted 2d ago</span>
                 <div className="flex gap-2">
@@ -307,7 +279,6 @@ function DeckPreview() {
               </div>
             </div>
 
-            {/* LIKE badge only during swipe to feel “real” */}
             {isTop && swipe && (
               <div className="pointer-events-none absolute left-4 top-4 rounded-md border-2 border-emerald-500 px-2 py-0.5 text-[clamp(.6rem,.9vw,.72rem)] font-semibold tracking-widest text-emerald-600">
                 LIKE

@@ -8,22 +8,19 @@ import LandingHero from "@/components/LandingHero";
 import LoginPage from "@/components/LoginPage";
 import DiscoverView from "@/components/DiscoverView";
 import RegisterCard from "@/components/RegisterCard";
-import axios from "axios";
 import { validateAuthToken } from "@/requests/requests";
+import SettingsView from "@/components/SettingsView";
 
 type Role = "JOB_SEEKER" | "BUSINESS";
-type View = "landing" | "login" | "register" | "discover";
+type View = "landing" | "login" | "register" | "discover" | "settings";
 
 export default function AppPage() {
-  // Auth state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<Role | null>(null);
 
-  // UI state
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<View>("landing");
 
-  // Splash once per tab
   const [showSplash, setShowSplash] = useState(false);
   useEffect(() => {
     const seen = sessionStorage.getItem("splashSeen");
@@ -70,7 +67,6 @@ export default function AppPage() {
   };
 
   const handleLogout = () => {
-    debugger;
     document.cookie = "authToken=; Max-Age=-99999999;";
     localStorage.removeItem("role");
     localStorage.removeItem("isAuthenticated");
@@ -82,13 +78,15 @@ export default function AppPage() {
   const onExplore = () => setView(isLoggedIn ? "discover" : "login");
   const onLogin = () => setView("login");
   const onCreate = () => setView("register");
+  const onSettings = () => setView("settings");
+  const onBackFromSettings = () => setView("discover");
 
   if (loading) return <div className="p-6 text-center">Loading...</div>;
 
   return (
     <main className="relative min-h-screen overflow-hidden">
       <AppBackground />
-      
+
       {showSplash && (
         <Splash onFinish={finishSplash} brand="Job Matching" />
       )}
@@ -110,7 +108,13 @@ export default function AppPage() {
       )}
 
       {view === "discover" && (
-        <DiscoverView userRole={userRole} onLogout={handleLogout} />
+        <DiscoverView userRole={userRole} onLogout={handleLogout} onSettings={onSettings} />
+      )}
+
+      {view === "settings" && (
+        <div className="grid min-h-screen place-items-center px-4">
+          <SettingsView onBack={onBackFromSettings} />
+        </div>
       )}
     </main>
   );

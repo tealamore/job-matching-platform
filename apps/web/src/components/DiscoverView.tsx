@@ -2,14 +2,13 @@
 'use client';
 import { useState, useEffect } from 'react';
 import SwipeDeck, { type SwipeDirection } from '@/components/SwipeDeck';
-import EmployerCard, { type Employer } from '@/components/EmployerCard';
+import EmployerDashboard from '@/components/EmployerDashboard';
 import JobCard, { type Job } from '@/components/JobCard';
-import { sampleEmployers } from '@/data/sample';
 import { fetchJobs } from '@/requests/requests';
 
 type Role = "JOB_SEEKER" | "BUSINESS";
 
-function EndOfDeck({}: {}) {
+function EndOfDeck({ }: {}) {
   return (
     <div className="grid h-full place-items-center">
       <div className="rounded-2xl border bg-white/90 p-8 text-center shadow-sm">
@@ -24,19 +23,17 @@ function EndOfDeck({}: {}) {
 export default function DiscoverView({
   userRole,
   onLogout,
+  onSettings,
 }: {
   userRole: Role | null;
   onLogout: () => void;
+  onSettings: () => void;
 }) {
   const [lastAction, setLastAction] = useState<string | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
 
   const onSwipeJob = (dir: SwipeDirection, item: Job) => {
     setLastAction(`${dir === 'right' ? 'Saved' : 'Dismissed'}: ${item.title}`);
-  };
-
-  const onSwipeEmployer = (dir: SwipeDirection, item: Employer) => {
-    setLastAction(`${dir === 'right' ? 'Saved' : 'Dismissed'}: ${item.name}`);
   };
 
   const empty = (
@@ -59,6 +56,12 @@ export default function DiscoverView({
 
         <div className="justify-self-end flex items-center gap-2">
           <button
+            onClick={onSettings}
+            className="rounded-lg border border-white/30 bg-white/10 px-3 py-1.5 text-sm text-white backdrop-blur transition hover:bg-white/20 active:translate-y-px"
+          >
+            Settings
+          </button>
+          <button
             onClick={onLogout}
             className="rounded-lg border border-white/30 bg-white/10 px-3 py-1.5 text-sm text-white backdrop-blur transition hover:bg-white/20 active:translate-y-px"
           >
@@ -80,21 +83,8 @@ export default function DiscoverView({
             renderItem={(job) => <JobCard job={job} />}
           />
         ) : (
-          <SwipeDeck<Employer>
-            items={sampleEmployers}
-            onSwipe={onSwipeEmployer}
-            width="clamp(36ch, 42vw, 60ch)"
-            controlsInside
-            showButtons={false}
-            progressVariant="chip"
-            emptyState={empty}
-            renderItem={(employer) => <EmployerCard employer={employer} />}
-          />
+          <EmployerDashboard />
         )}
-      </div>
-
-      <div className="pointer-events-none select-none text-center text-sm text-white/90">
-        {lastAction ? lastAction : 'Tip: drag or use ← / → (A / D).'}
       </div>
     </div>
   );

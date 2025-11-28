@@ -25,6 +25,7 @@ public class JwtService {
             "role", user.getRole(),
             "userId", user.getUserId().toString()
         );
+
         return jwtUtil.generateToken(user.getUsername(), claims);
     }
 

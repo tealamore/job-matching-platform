@@ -2,7 +2,9 @@ package com.FairMatch.FairMatch.controller;
 
 import com.FairMatch.FairMatch.dto.request.LoginRequest;
 import com.FairMatch.FairMatch.dto.request.SignupRequest;
+import com.FairMatch.FairMatch.dto.response.AuthResponse;
 import com.FairMatch.FairMatch.model.Auth;
+import com.FairMatch.FairMatch.model.UserType;
 import com.FairMatch.FairMatch.service.AuthService;
 import com.FairMatch.FairMatch.service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
         Auth user;
         try {
             user = authService.signin(request);
@@ -44,7 +46,12 @@ public class AuthController {
         String token = jwtService.generateToken(user);
         Cookie cookie = jwtService.generateAuthCookie(token);
         response.addCookie(cookie);
-        return ResponseEntity.ok().build();
+
+        AuthResponse authResponse = AuthResponse.builder()
+          .userType(UserType.valueOf(user.getRole()))
+          .build();
+        return ResponseEntity.ok()
+          .body(authResponse);
     }
 
     @PostMapping("/signup")

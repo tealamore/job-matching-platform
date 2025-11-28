@@ -8,7 +8,6 @@ type Role = "JOB_SEEKER" | "BUSINESS";
 export default function LoginPage({ onLogin }: { onLogin: (role: Role) => void }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<Role>("JOB_SEEKER");
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
 
@@ -18,7 +17,7 @@ export default function LoginPage({ onLogin }: { onLogin: (role: Role) => void }
 
     try {
       const data = await login(username, password);
-      onLogin(data.role || role);
+      onLogin(data.userType);
     } catch (error: any) {
       setError("Invalid username or password");
     }
@@ -26,7 +25,6 @@ export default function LoginPage({ onLogin }: { onLogin: (role: Role) => void }
 
   return (
     <div className="relative w-[min(500px,92vw)]">
-      {/* subtle halo */}
       <div className="absolute -inset-2 rounded-3xl bg-white/10 blur-2xl" />
       <div className="relative rounded-3xl bg-white/10 p-8 backdrop-blur-xl ring-1 ring-white/20 shadow-[0_20px_60px_rgba(0,0,0,.25)]">
         <div className="mb-6 flex items-center gap-3">
