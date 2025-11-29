@@ -63,7 +63,7 @@ export default function SettingsView({ onBack }: { onBack: () => void }) {
             setSuccessMessage('Profile updated successfully!');
             setFormData({ ...formData, password: '' });
 
-            setTimeout(() => setSuccessMessage(''), 3000);
+            setTimeout(() => setSuccessMessage(''), 30000);
         } catch (err) {
             console.error("Failed to update profile", err);
         } finally {
