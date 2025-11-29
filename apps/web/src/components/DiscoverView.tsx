@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react';
 import SwipeDeck, { type SwipeDirection } from '@/components/SwipeDeck';
 import EmployerDashboard from '@/components/EmployerDashboard';
 import JobCard, { type Job } from '@/components/JobCard';
-import { fetchJobs } from '@/requests/requests';
-
-type Role = "JOB_SEEKER" | "BUSINESS";
+import { fetchJobs } from '@/util/requests';
+import { Role } from '@/util/types';
 
 function EndOfDeck({ }: {}) {
   return (
@@ -76,8 +75,6 @@ export default function DiscoverView({
             onSwipe={onSwipeJob}
             width="clamp(36ch, 42vw, 60ch)"
             controlsInside
-            showButtons={true}
-            progressVariant="chip"
             emptyState={empty}
             renderItem={(job) => <JobCard job={job} />}
           />
