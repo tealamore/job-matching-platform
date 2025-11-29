@@ -11,4 +11,6 @@ public interface JobTitlesRepository extends JpaRepository<JobTitles, UUID> {
   List<JobTitles> findByUserId(UUID userId);
 
   Optional<JobTitles> findByUserIdAndTitle(UUID id, String title);
+
+  void deleteAllByUserId(UUID userId);
 }

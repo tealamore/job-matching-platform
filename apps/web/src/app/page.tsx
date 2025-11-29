@@ -121,7 +121,7 @@ export default function AppPage() {
 
       {view === "settings" && (
         <div className="grid min-h-screen place-items-center px-4">
-          <SettingsView userRole={userRole} onBack={onBackFromSettings} />
+          <SettingsView onBack={onBackFromSettings} />
         </div>
       )}
     </main>

@@ -1,11 +1,11 @@
 // src/components/DiscoverView.tsx
 'use client';
 import { useState, useEffect } from 'react';
-import SwipeDeck, { type SwipeDirection } from '@/components/SwipeDeck';
+import SwipeDeck from '@/components/SwipeDeck';
 import EmployerDashboard from '@/components/EmployerDashboard';
 import JobCard, { type Job } from '@/components/JobCard';
 import { fetchJobs } from '@/util/requests';
-import { Role } from '@/util/types';
+import { Role, SwipeDirection } from '@/util/types';
 
 function EndOfDeck({ }: {}) {
   return (

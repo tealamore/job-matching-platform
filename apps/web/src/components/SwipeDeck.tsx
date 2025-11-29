@@ -1,10 +1,8 @@
 // src/components/SwipeDeck.tsx
 'use client';
 import { interactWithJob } from '@/util/requests';
+import { SwipeDirection, WithId } from '@/util/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-
-export type SwipeDirection = 'left' | 'right';
-type WithId = { id: string };
 
 type SwipeDeckProps<T extends WithId> = {
   items: T[];

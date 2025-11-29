@@ -1,6 +1,8 @@
 package com.FairMatch.FairMatch.controller;
 
+import com.FairMatch.FairMatch.dto.request.UpdateDesiredTitlesRequest;
 import com.FairMatch.FairMatch.dto.request.UpdateMeRequest;
+import com.FairMatch.FairMatch.dto.request.UpdateSkillsRequest;
 import com.FairMatch.FairMatch.dto.response.AuthResponse;
 import com.FairMatch.FairMatch.dto.response.UserResponse;
 import com.FairMatch.FairMatch.model.Auth;
@@ -64,28 +66,16 @@ public class MeController {
   }
 
   @PostMapping("/title")
-  public void addJobTitle(HttpServletRequest request, @RequestParam String title) {
+  public void updateJobTitles(HttpServletRequest request, @RequestBody UpdateDesiredTitlesRequest body) {
     String username = jwtService.getUsernameFromCookies(request.getCookies());
 
-    meService.addJobTitle(username, title);
-  }
-
-  @DeleteMapping("/title")
-  public void removeJobTitle(HttpServletRequest request, @RequestParam String title) {
-    String username = jwtService.getUsernameFromCookies(request.getCookies());
-
-    meService.removeJobTitle(username, title);
+    meService.updateJobTitles(username, body);
   }
 
   @PostMapping("/skill")
-  public void addSkill(HttpServletRequest request, @RequestParam String skill) {
+  public void addSkill(HttpServletRequest request, @RequestBody UpdateSkillsRequest body) {
     String username = jwtService.getUsernameFromCookies(request.getCookies());
-    meService.addSkill(username, skill);
-  }
 
-  @DeleteMapping("/skill")
-  public void removeSkill(HttpServletRequest request, @RequestParam String skill) {
-    String username = jwtService.getUsernameFromCookies(request.getCookies());
-    meService.removeSkill(username, skill);
+    meService.updateSkills(username, body);
   }
 }
