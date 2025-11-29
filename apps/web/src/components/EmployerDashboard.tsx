@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { fetchMyJobs, createJob } from '@/requests/requests';
+import { fetchMyJobs, createJob } from '@/util/requests';
 
 type UserResponse = {
     id: string;
@@ -102,7 +102,7 @@ export default function EmployerDashboard() {
 
                     <div className="flex-1 overflow-y-auto space-y-3 pr-2">
                         {jobs.length === 0 ? (
-                            <div className="text-center py-8 text-gray-500 text-sm">
+                            <div className="text-center py-8 text-black text-sm">
                                 You haven't posted any jobs yet.
                             </div>
                         ) : (

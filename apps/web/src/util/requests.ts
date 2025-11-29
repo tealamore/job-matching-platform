@@ -77,6 +77,16 @@ export const updateMe = async (data: { name: string; email: string; phone: strin
     return response.data;
 };
 
+export const updateTitles = async (data: { desiredTitles: string[] }) => {
+    const response = await axios.post('/api/me/title', data, { withCredentials: true });
+    return response.data;
+};
+
+export const updateSkills = async (data: { skills: string[] }) => {
+    const response = await axios.post('/api/me/skill', data, { withCredentials: true });
+    return response.data;
+};
+
 export const createJob = async (title: string, description: string, salary: number, tags: string[]) => {
     const response = await axios.post('/api/jobs', {
         title,

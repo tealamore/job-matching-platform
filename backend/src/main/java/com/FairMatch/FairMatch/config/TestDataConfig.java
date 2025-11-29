@@ -28,13 +28,13 @@ public class TestDataConfig {
                                      ) {
         return args -> {
           String employerEmail = "user1@example.com";
-//          jobTagsRepository.deleteAll();
-//          skillsRepository.deleteAll();
-//          jobTitlesRepository.deleteAll();
-//          jobJobSeekerRepository.deleteAll();
-//          jobsRepository.deleteAll();
-//          authRepo.deleteAll();
-//          userRepo.deleteAll();
+          jobTagsRepository.deleteAll();
+          skillsRepository.deleteAll();
+          jobTitlesRepository.deleteAll();
+          jobJobSeekerRepository.deleteAll();
+          jobsRepository.deleteAll();
+          authRepo.deleteAll();
+          userRepo.deleteAll();
 
           if (!userRepo.existsByEmail(employerEmail) && !authRepo.existsByUsername(employerEmail)) {
               User user = User.builder()

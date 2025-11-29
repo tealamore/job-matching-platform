@@ -1,11 +1,8 @@
 // src/components/SwipeDeck.tsx
 'use client';
-import { interactWithJob } from '@/requests/requests';
-import axios from 'axios';
+import { interactWithJob } from '@/util/requests';
+import { SwipeDirection, WithId } from '@/util/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-
-export type SwipeDirection = 'left' | 'right';
-type WithId = { id: string };
 
 type SwipeDeckProps<T extends WithId> = {
   items: T[];
@@ -17,8 +14,6 @@ type SwipeDeckProps<T extends WithId> = {
   emptyState?: React.ReactNode;
   controlsInside?: boolean;
   reservedBottom?: string | number;
-  showButtons?: boolean;
-  progressVariant?: 'bar' | 'chip' | 'dots' | 'none';
 };
 
 const isInteractive = (el: EventTarget | null) =>
@@ -35,8 +30,6 @@ export default function SwipeDeck<T extends WithId>({
   emptyState = <p className="text-sm text-gray-500">No more cards 🎉</p>,
   controlsInside = true,
   reservedBottom,
-  showButtons = false,
-  progressVariant = 'chip',
 }: SwipeDeckProps<T>) {
   const [index, setIndex] = useState(0);
   const [dx, setDx] = useState(0);
@@ -44,7 +37,6 @@ export default function SwipeDeck<T extends WithId>({
   const [dragging, setDragging] = useState(false);
   const [animating, setAnimating] = useState<'left' | 'right' | null>(null);
   const [toast, setToast] = useState<string | null>(null);
-  const [pulse, setPulse] = useState<'left' | 'right' | null>(null);
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
@@ -52,7 +44,6 @@ export default function SwipeDeck<T extends WithId>({
   const [stackGap, setStackGap] = useState(14);
 
   const visible = useMemo(() => items.slice(index, index + 3), [items, index]);
-  const progressPct = items.length ? Math.min(100, Math.max(0, (index / items.length) * 100)) : 0;
 
   const topCardStyle = useMemo(() => {
     const tiltZ = Math.max(-18, Math.min(18, dx / 10));
@@ -153,7 +144,6 @@ export default function SwipeDeck<T extends WithId>({
     }
   };
 
-  // dynamic measuring
   useEffect(() => {
     const update = () => {
       if (typeof reservedBottom === 'number') setReservedPx(reservedBottom);
@@ -186,7 +176,6 @@ export default function SwipeDeck<T extends WithId>({
     );
   }
 
-  const showChip = progressVariant === 'chip';
   const stackHeight = controlsInside ? `calc(100% - ${reservedPx}px)` : '100%';
 
   return (
@@ -195,13 +184,11 @@ export default function SwipeDeck<T extends WithId>({
       className="relative select-none overflow-visible mx-auto"
       style={{ height, width, perspective: 1200 }}
     >
-      {showChip && (
-        <div className="pointer-events-none absolute right-2 top-2 z-[140]">
-          <span className="rounded-full bg-white/90 px-2 py-1 text-xs font-medium text-gray-900 shadow ring-1 ring-black/5">
-            {index + 1} / {items.length}
-          </span>
-        </div>
-      )}
+      <div className="pointer-events-none absolute right-2 top-2 z-[140]">
+        <span className="rounded-full bg-white/90 px-2 py-1 text-xs font-medium text-gray-900 shadow ring-1 ring-black/5">
+          {index + 1} / {items.length}
+        </span>
+      </div>
 
       <div className="absolute inset-x-0 top-0" style={{ height: stackHeight }}>
         {visible.map((item, i) => {
@@ -232,25 +219,6 @@ export default function SwipeDeck<T extends WithId>({
               aria-roledescription={isTop ? 'Tinder-like swipable card' : undefined}
             >
               <div className="h-full w-full">{renderItem(item)}</div>
-
-              {isTop && (
-                <>
-                  <div
-                    className={`pointer-events-none absolute left-4 top-4 rounded-md border-2 px-3 py-1 text-sm font-semibold tracking-widest transition-opacity ${
-                      dx > 18 ? 'border-emerald-500 text-emerald-600 opacity-100' : 'opacity-0'
-                    }`}
-                  >
-                    LIKE
-                  </div>
-                  <div
-                    className={`pointer-events-none absolute right-4 top-4 rounded-md border-2 px-3 py-1 text-sm font-semibold tracking-widest transition-opacity ${
-                      dx < -18 ? 'border-rose-500 text-rose-600 opacity-100' : 'opacity-0'
-                    }`}
-                  >
-                    NOPE
-                  </div>
-                </>
-              )}
             </div>
           );
         })}
@@ -258,9 +226,8 @@ export default function SwipeDeck<T extends WithId>({
 
       {/* Toast — never blocks clicks */}
       <div
-        className={`pointer-events-none absolute left-1/2 -translate-x-1/2 transition-opacity duration-200 ${
-          toast ? 'opacity-100' : 'opacity-0'
-        } z-[200]`}
+        className={`pointer-events-none absolute left-1/2 -translate-x-1/2 transition-opacity duration-200 ${toast ? 'opacity-100' : 'opacity-0'
+          } z-[200]`}
         style={{ bottom: reservedPx + 36 }}
         aria-live="polite"
       >
@@ -268,33 +235,6 @@ export default function SwipeDeck<T extends WithId>({
           {toast ?? ' '}
         </div>
       </div>
-
-      {/* Bottom overlay (progress + optional buttons) */}
-      {controlsInside && (
-        <div
-          ref={overlayRef}
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[160]"
-          style={{ paddingBottom: 'max(0.2vh, calc(env(safe-area-inset-bottom) - 0px))' }}
-        >
-          <div className="w-full px-2 flex flex-col items-center gap-3">
-            {progressVariant === 'bar' && (
-              <div
-                className="h-1.5 w-full overflow-hidden rounded-full bg-white/30 backdrop-blur-sm"
-                role="progressbar"
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={progressPct}
-                aria-label="Deck progress"
-              >
-                <div
-                  className="h-full rounded-full transition-[width] duration-300"
-                  style={{ width: `${progressPct}%`, background: 'linear-gradient(to right, #34d399, #10b981)' }}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

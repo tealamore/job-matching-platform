@@ -19,7 +19,6 @@ export default function Splash({
   duration,
   gradientClassName = "bg-gradient-to-br from-violet-600 via-fuchsia-500 to-amber-400",
 }: SplashProps) {
-  // Show immediately, then fade out
   const [out, setOut] = useState(false);
 
   const { hold, fadeOut } = useMemo(() => {
@@ -39,12 +38,6 @@ export default function Splash({
     };
   }, [hold, fadeOut, onFinish]);
 
-  const monogram = useMemo(() => {
-    const parts = brand.trim().split(/\s+/);
-    const letters = (parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "");
-    return (letters || "JM").toUpperCase();
-  }, [brand]);
-
   return (
     <div
       aria-hidden="true"
@@ -56,7 +49,6 @@ export default function Splash({
       ].join(" ")}
       style={{ transitionDuration: `${fadeOut}ms` }}
     >
-      {/* Subtle glows */}
       <div className="pointer-events-none absolute -left-32 top-24 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
       <div className="pointer-events-none absolute -right-28 bottom-16 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
 
@@ -78,7 +70,7 @@ export default function Splash({
           />
         ) : (
           <div className="grid h-20 w-20 place-items-center rounded-xl bg-white text-3xl font-black text-gray-900 shadow-sm ring-1 ring-black/5">
-            {monogram}
+            FM
           </div>
         )}
         <p className="mt-3 select-none text-sm font-medium tracking-wide text-gray-900/80">

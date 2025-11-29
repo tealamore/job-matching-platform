@@ -2,14 +2,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getMe, updateMe } from '@/requests/requests';
+import { getMe, updateMe, updateSkills, updateTitles } from '@/util/requests';
+import { Role } from '@/util/types';
 
 type UserData = {
     id: string;
     name: string;
     email: string;
     phone: string;
-    userType: string;
+    userType: Role;
+    desiredTitles: string[];
+    skills: string[];
 };
 
 export default function SettingsView({ onBack }: { onBack: () => void }) {
@@ -19,7 +22,9 @@ export default function SettingsView({ onBack }: { onBack: () => void }) {
         name: '',
         email: '',
         phone: '',
-        password: ''
+        password: '',
+        desiredTitles: [] as string[],
+        skills: [] as string[]
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
@@ -27,12 +32,15 @@ export default function SettingsView({ onBack }: { onBack: () => void }) {
     useEffect(() => {
         getMe()
             .then((data) => {
+                console.log(data);
                 setUserData(data);
                 setFormData({
                     name: data.name,
                     email: data.email,
                     phone: data.phone,
-                    password: ''
+                    password: '',
+                    desiredTitles: data.desiredTitles.map((title: any) => title.title),
+                    skills: data.skills.map((skill: any) => skill.skillName)
                 });
                 setLoading(false);
             })
@@ -51,7 +59,7 @@ export default function SettingsView({ onBack }: { onBack: () => void }) {
             const updateData: any = {
                 name: formData.name,
                 email: formData.email,
-                phone: formData.phone
+                phone: formData.phone,
             };
 
             if (formData.password) {
@@ -60,10 +68,19 @@ export default function SettingsView({ onBack }: { onBack: () => void }) {
 
             await updateMe(updateData);
 
+            if (userData?.userType === 'JOB_SEEKER') {
+                await updateTitles({
+                    desiredTitles: formData.desiredTitles,
+                });
+                await updateSkills({
+                    skills: formData.skills,
+                });
+            }
+
             setSuccessMessage('Profile updated successfully!');
             setFormData({ ...formData, password: '' });
 
-            setTimeout(() => setSuccessMessage(''), 3000);
+            setTimeout(() => setSuccessMessage(''), 30000);
         } catch (err) {
             console.error("Failed to update profile", err);
         } finally {
@@ -87,9 +104,8 @@ export default function SettingsView({ onBack }: { onBack: () => void }) {
                         <h2 className="text-2xl font-bold text-white">Account Settings</h2>
                         <button
                             onClick={onBack}
-                            className="text-white/80 hover:text-white transition"
-                        >
-                            ← Back
+                            className="text-white/80 hover:text-white transition">
+                            Back
                         </button>
                     </div>
                     {userData && (
@@ -141,6 +157,38 @@ export default function SettingsView({ onBack }: { onBack: () => void }) {
                             placeholder="(555) 123-4567"
                         />
                     </div>
+
+                    {userData?.userType === 'JOB_SEEKER' && (
+                        <>
+                            <div>
+                                <label className="block text-sm font-medium text-white mb-1">
+                                    Desired Titles *
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={formData.desiredTitles.join(", ")}
+                                    onChange={(e) => setFormData({ ...formData, desiredTitles: e.target.value.split(", ").map(title => title) })}
+                                    className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="Title 1, Title 2, Title 3"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-white mb-1">
+                                    Skills *
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={formData.skills.join(", ")}
+                                    onChange={(e) => setFormData({ ...formData, skills: e.target.value.split(", ").map(skill => skill) })}
+                                    className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/40 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="Skill 1, Skill 2, Skill 3"
+                                />
+                            </div>
+                        </>
+                    )}
 
                     <div>
                         <label className="block text-sm font-medium text-white mb-1">

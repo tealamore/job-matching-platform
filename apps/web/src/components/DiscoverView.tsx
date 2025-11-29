@@ -1,20 +1,18 @@
 // src/components/DiscoverView.tsx
 'use client';
 import { useState, useEffect } from 'react';
-import SwipeDeck, { type SwipeDirection } from '@/components/SwipeDeck';
+import SwipeDeck from '@/components/SwipeDeck';
 import EmployerDashboard from '@/components/EmployerDashboard';
 import JobCard, { type Job } from '@/components/JobCard';
-import { fetchJobs } from '@/requests/requests';
-
-type Role = "JOB_SEEKER" | "BUSINESS";
+import { fetchJobs } from '@/util/requests';
+import { Role, SwipeDirection } from '@/util/types';
 
 function EndOfDeck({ }: {}) {
   return (
     <div className="grid h-full place-items-center">
       <div className="rounded-2xl border bg-white/90 p-8 text-center shadow-sm">
-        <div className="text-3xl mb-1">🎉</div>
-        <h3 className="text-xl font-semibold">You’re all caught up!</h3>
-        <p className="mt-1 text-sm text-gray-600">Nice work — here’s how you did.</p>
+        <h3 className="text-xl font-semibold text-black">You're all caught up!</h3>
+        <p className="mt-1 text-sm text-black">Nice work</p>
       </div>
     </div>
   );
@@ -77,8 +75,6 @@ export default function DiscoverView({
             onSwipe={onSwipeJob}
             width="clamp(36ch, 42vw, 60ch)"
             controlsInside
-            showButtons={true}
-            progressVariant="chip"
             emptyState={empty}
             renderItem={(job) => <JobCard job={job} />}
           />
