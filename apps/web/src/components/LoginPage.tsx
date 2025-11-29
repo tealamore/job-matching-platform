@@ -1,14 +1,12 @@
 // src/components/LoginPage.tsx
 "use client";
 import { useState } from "react";
-import { login } from "@/requests/requests";
-
-type Role = "JOB_SEEKER" | "BUSINESS";
+import { login } from "@/util/requests";
+import { Role } from "@/util/types";
 
 export default function LoginPage({ onLogin }: { onLogin: (role: Role) => void }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
 
   const submit = async (e: React.FormEvent) => {
@@ -17,7 +15,7 @@ export default function LoginPage({ onLogin }: { onLogin: (role: Role) => void }
 
     try {
       const data = await login(username, password);
-      onLogin(data.userType);
+      onLogin(data.userType as Role);
     } catch (error: any) {
       setError("Invalid username or password");
     }

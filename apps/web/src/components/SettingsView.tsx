@@ -2,17 +2,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getMe, updateMe } from '@/requests/requests';
+import { getMe, updateMe } from '@/util/requests';
+import { Role } from '@/util/types';
 
 type UserData = {
     id: string;
     name: string;
     email: string;
     phone: string;
-    userType: string;
+    userType: Role;
 };
 
-export default function SettingsView({ onBack }: { onBack: () => void }) {
+export default function SettingsView({ userRole, onBack }: { userRole: Role | null; onBack: () => void }) {
     const [userData, setUserData] = useState<UserData | null>(null);
     const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
@@ -89,7 +90,7 @@ export default function SettingsView({ onBack }: { onBack: () => void }) {
                             onClick={onBack}
                             className="text-white/80 hover:text-white transition"
                         >
-                            ← Back
+                            Back
                         </button>
                     </div>
                     {userData && (

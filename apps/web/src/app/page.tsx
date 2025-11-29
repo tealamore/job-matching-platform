@@ -8,10 +8,10 @@ import LandingHero from "@/components/LandingHero";
 import LoginPage from "@/components/LoginPage";
 import DiscoverView from "@/components/DiscoverView";
 import RegisterCard from "@/components/RegisterCard";
-import { validateAuthToken } from "@/requests/requests";
+import { validateAuthToken } from "@/util/requests";
 import SettingsView from "@/components/SettingsView";
+import { Role } from "@/util/types";
 
-type Role = "JOB_SEEKER" | "BUSINESS";
 type View = "landing" | "login" | "register" | "discover" | "settings";
 
 export default function AppPage() {
@@ -121,7 +121,7 @@ export default function AppPage() {
 
       {view === "settings" && (
         <div className="grid min-h-screen place-items-center px-4">
-          <SettingsView onBack={onBackFromSettings} />
+          <SettingsView userRole={userRole} onBack={onBackFromSettings} />
         </div>
       )}
     </main>

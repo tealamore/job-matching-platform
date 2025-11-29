@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { fetchMyJobs, createJob } from '@/requests/requests';
+import { fetchMyJobs, createJob } from '@/util/requests';
 
 type UserResponse = {
     id: string;

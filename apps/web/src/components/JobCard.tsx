@@ -10,7 +10,7 @@ export type Job = {
   salary?: string;
   tags?: string[];
   description?: string;
-};
+}; //todo: fix this. needs to be able to get tags and company name
 
 export default function JobCard({
   job,

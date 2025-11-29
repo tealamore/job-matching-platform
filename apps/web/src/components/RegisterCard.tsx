@@ -2,9 +2,8 @@
 "use client";
 
 import { useState } from "react";
-import { register } from "@/requests/requests";
-
-type Role = "JOB_SEEKER" | "BUSINESS";
+import { register } from "@/util/requests";
+import { Role } from "@/util/types";
 
 export default function RegisterCard({ onLogin }: { onLogin: (role: Role) => void }) {
   const [email, setEmail] = useState("");
