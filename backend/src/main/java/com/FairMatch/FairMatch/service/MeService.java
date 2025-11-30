@@ -105,25 +105,6 @@ public class MeService {
     return auth;
   }
 
-  public void addSkill(String username, String skill) {
-    User user = userRepository.findByEmail(username)
-      .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-    Skills existingSkill = skillsRepository.findByUserIdAndSkillName(user.getId(), skill)
-      .orElse(null);
-
-    if (existingSkill != null) {
-      return;
-    }
-
-    Skills newSkill = Skills.builder()
-      .user(user)
-      .skillName(skill)
-      .build();
-
-    skillsRepository.save(newSkill);
-  }
-
   @Transactional
   public void updateJobTitles(String username, UpdateDesiredTitlesRequest body) {
     User user = userRepository.findByEmail(username)

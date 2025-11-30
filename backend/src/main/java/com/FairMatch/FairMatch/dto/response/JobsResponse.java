@@ -1,5 +1,6 @@
 package com.FairMatch.FairMatch.dto.response;
 
+import com.FairMatch.FairMatch.model.JobTags;
 import com.FairMatch.FairMatch.model.Jobs;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,6 +25,8 @@ public class JobsResponse {
 
     private List<JobJobSeekerResponse> jobJobSeekers;
 
+    private List<JobTags> jobTags;
+
     public JobsResponse(Jobs jobs) {
       this.title = jobs.getTitle();
       this.description = jobs.getDescription();
@@ -41,5 +44,11 @@ public class JobsResponse {
       } else {
         this.jobJobSeekers = jobs.getJobJobSeekers().stream().map(JobJobSeekerResponse::new).toList();
       }
+    }
+
+    public JobsResponse(Jobs jobs, List<JobTags> jobTags) {
+      this(jobs);
+
+      this.jobTags = jobTags;
     }
 }

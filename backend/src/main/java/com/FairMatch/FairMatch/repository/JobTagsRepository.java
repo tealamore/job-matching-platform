@@ -9,4 +9,6 @@ import java.util.UUID;
 public interface JobTagsRepository extends JpaRepository<JobTags, UUID> {
 
   List<JobTags> findAllBySkillNameIn(List<String> skillNames);
+
+  List<JobTags> findAllByJobsId(UUID jobsId);
 }

@@ -1,4 +1,3 @@
-// src/components/JobCard.tsx
 'use client';
 import { useMemo } from 'react';
 import Card from './Card';
@@ -6,11 +5,20 @@ import Card from './Card';
 export type Job = {
   id: string;
   title: string;
-  company: string;
   salary?: string;
-  tags?: string[];
+  tags?: Tags[];
   description?: string;
-}; //todo: fix this. needs to be able to get tags and company name
+  postedBy: PostedBy;
+};
+
+export type PostedBy = {
+  name: string;
+};
+
+export type Tags = {
+  name: string;
+};
+
 
 export default function JobCard({
   job,
@@ -21,7 +29,7 @@ export default function JobCard({
 }) {
   const match = useMemo(() => {
     const mine = new Set(mySkills.map(s => s.toLowerCase()));
-    const tech = (job.tags ?? []).map(s => s.toLowerCase());
+    const tech = (job.tags ?? []).map(s => s.name.toLowerCase());
     const hits = tech.filter(t => mine.has(t)).length;
     const pct = tech.length ? Math.round((hits / tech.length) * 100) : 0;
     const sorted = job.tags ?? []
@@ -34,7 +42,7 @@ export default function JobCard({
         <div className="flex items-center gap-3">
           <div>
             <h3 className="text-base font-semibold leading-tight text-black">{job.title}</h3>
-            <p className="text-xs text-black">{job.company}</p>
+            <p className="text-xs text-black">{job.postedBy.name}</p>
           </div>
         </div>
         {job.salary && (
@@ -76,10 +84,10 @@ export default function JobCard({
             <div className="mt-3 flex flex-wrap gap-2">
               {match.highlights.map(t => (
                 <span
-                  key={t}
+                  key={t.name}
                   className="rounded-full border border-gray-200 bg-gray-50 px-2 py-1 text-xs text-gray-700"
                 >
-                  {t}
+                  {t.name}
                 </span>
               ))}
             </div>

@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 
 @Configuration
 @Profile("!prod")
@@ -38,7 +39,7 @@ public class TestDataConfig {
 
           if (!userRepo.existsByEmail(employerEmail) && !authRepo.existsByUsername(employerEmail)) {
               User user = User.builder()
-                  .name("Test User")
+                  .name("Google.com")
                   .email(employerEmail)
                   .phone("1234567890")
                   .userType(UserType.BUSINESS)
@@ -80,12 +81,40 @@ public class TestDataConfig {
 
           if (jobsRepository.findAllByUser(userRepo.findByEmail(employerEmail).orElseThrow()).isEmpty()) {
             Jobs jobs = Jobs.builder()
-              .description("Test Job")
+              .description("Google's software engineers develop the next-generation technologies that change how billions of users connect, explore, and interact with information and one another. Our products need to handle information at massive scale, and extend well beyond web")
               .title("Software Engineer")
               .salary(75000.0)
               .user(userRepo.findByEmail(employerEmail).orElseThrow())
               .build();
-            jobsRepository.saveAndFlush(jobs);
+            jobs = jobsRepository.saveAndFlush(jobs);
+
+            List<String> tags = List.of("Python", "Java", "OSS", "Node.js");
+
+            Jobs finalJobs = jobs;
+            jobTagsRepository.saveAll(tags.stream()
+              .map(it -> JobTags.builder()
+                .skillName(it)
+                .jobs(finalJobs)
+                .build())
+                .toList());
+
+            Jobs secondJob = Jobs.builder()
+              .description("At Google, our philosophy is build it, break it and then rebuild it better. That thinking is at the core of how we approach testing at Google. Unlike roles with similar names at the other companies, Test Engineers at Google aren't manual testers -- you")
+              .title("Software Tester")
+              .salary(75000.0)
+              .user(userRepo.findByEmail(employerEmail).orElseThrow())
+              .build();
+            secondJob = jobsRepository.saveAndFlush(jobs);
+
+            tags = List.of("Python", "Java", "Selenium", "Junit");
+
+            Jobs finalSecondJob = secondJob;
+            jobTagsRepository.saveAll(tags.stream()
+              .map(it -> JobTags.builder()
+                .skillName(it)
+                .jobs(finalSecondJob)
+                .build())
+              .toList());
           }
 
           if (jobJobSeekerRepository.findAll().isEmpty()) {
