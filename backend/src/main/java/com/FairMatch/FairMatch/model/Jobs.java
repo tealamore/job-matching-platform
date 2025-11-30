@@ -36,6 +36,7 @@ public class Jobs {
   private User user;
 
   @OneToMany(mappedBy = "jobs", fetch = FetchType.LAZY)
+  @Builder.Default
   private List<JobJobSeeker> jobJobSeekers = new ArrayList<>();
 
   public Jobs(UUID id, String title, String description, Double salary, User user, JobJobSeeker jobJobSeeker) {

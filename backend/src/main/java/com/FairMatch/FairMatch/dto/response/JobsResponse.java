@@ -25,7 +25,7 @@ public class JobsResponse {
 
     private List<JobJobSeekerResponse> jobJobSeekers;
 
-    private List<JobTags> jobTags;
+    private List<String> jobTags;
 
     public JobsResponse(Jobs jobs) {
       this.title = jobs.getTitle();
@@ -49,6 +49,6 @@ public class JobsResponse {
     public JobsResponse(Jobs jobs, List<JobTags> jobTags) {
       this(jobs);
 
-      this.jobTags = jobTags;
+      this.jobTags = jobTags.stream().map(JobTags::getSkillName).toList();
     }
 }
