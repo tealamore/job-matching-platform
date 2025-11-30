@@ -1,4 +1,3 @@
-// src/components/RegisterCard.tsx
 "use client";
 
 import { useState } from "react";

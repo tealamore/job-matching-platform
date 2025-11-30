@@ -6,12 +6,15 @@ import com.FairMatch.FairMatch.dto.response.JobsResponse;
 import com.FairMatch.FairMatch.exception.BadRequestException;
 import com.FairMatch.FairMatch.model.*;
 import com.FairMatch.FairMatch.repository.*;
+import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.*;
+
+import static java.util.Collections.emptyList;
 
 @Service
 public class JobService {
@@ -136,16 +139,16 @@ public class JobService {
     uniqueJobs.removeIf(it -> alreadyApplied.contains(it.getId()));
 
     if (uniqueJobs.isEmpty()) {
-      return jobsRepository.findAll()
-        .stream()
-        .map(JobsResponse::new)
-        .peek(it -> it.setJobJobSeekers(Collections.emptyList()))
-        .toList();
+      uniqueJobs = new HashSet<>(jobsRepository.findAll());
     }
 
     return uniqueJobs.stream()
-      .map(JobsResponse::new)
-      .peek(it -> it.setJobJobSeekers(Collections.emptyList()))
+      .map(it -> {
+        List<JobTags> tags = jobTagsRepository.findAllByJobsId(it.getId());
+        return new Pair<>(it, tags);
+      })
+      .map(it -> new JobsResponse(it.a, it.b))
+      .peek(it -> it.setJobJobSeekers(emptyList()))
       .toList();
   }
 

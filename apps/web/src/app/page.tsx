@@ -44,7 +44,20 @@ export default function AppPage() {
   }
 
   useEffect(() => {
-    checkToken();
+    const authToken = getAuthToken();
+    if (authToken !== null) {
+      validateAuthToken().then((valid) => {
+        if (valid) {
+          setIsLoggedIn(true);
+          setUserRole(localStorage.getItem("role") as Role);
+          setView("discover");
+        } else {
+          setIsLoggedIn(false);
+          setUserRole(null);
+          setView("landing");
+        }
+      });
+    }
     setLoading(false);
   }, []);
 
