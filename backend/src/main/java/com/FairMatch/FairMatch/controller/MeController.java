@@ -4,6 +4,7 @@ import com.FairMatch.FairMatch.dto.request.UpdateDesiredTitlesRequest;
 import com.FairMatch.FairMatch.dto.request.UpdateMeRequest;
 import com.FairMatch.FairMatch.dto.request.UpdateSkillsRequest;
 import com.FairMatch.FairMatch.dto.response.AuthResponse;
+import com.FairMatch.FairMatch.dto.response.JobsResponse;
 import com.FairMatch.FairMatch.dto.response.UserResponse;
 import com.FairMatch.FairMatch.model.Auth;
 import com.FairMatch.FairMatch.model.Jobs;
@@ -40,7 +41,7 @@ public class MeController {
   }
 
   @GetMapping("/jobs")
-  public List<Jobs> getMyJobs(HttpServletRequest request) {
+  public List<JobsResponse> getMyJobs(HttpServletRequest request) {
     String username = jwtService.getUsernameFromCookies(request.getCookies());
 
     return meService.getMyJobs(username);

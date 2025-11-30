@@ -26,6 +26,7 @@ type JobsResponse = {
     salary: number;
     postedBy: UserResponse;
     jobJobSeekers: JobJobSeekerResponse[];
+    jobTags: string[];
 };
 
 export default function EmployerDashboard() {
@@ -45,10 +46,11 @@ export default function EmployerDashboard() {
         fetchMyJobs()
             .then((data) => {
                 setJobs(data);
-                setLoading(false);
             })
             .catch((err) => {
                 console.error("Failed to fetch jobs", err);
+            })
+            .finally(() => {
                 setLoading(false);
             });
     }, []);
@@ -150,6 +152,16 @@ export default function EmployerDashboard() {
                                         <p className="text-black mt-1">
                                             Description: {selectedJob.description}
                                         </p>
+                                        <div className="mt-3 flex flex-wrap gap-2">
+                                            {selectedJob.jobTags.map(t => (
+                                                <span
+                                                    key={t}
+                                                    className="rounded-full border border-gray-200 bg-gray-50 px-2 py-1 text-xs text-gray-700"
+                                                >
+                                                    {t}
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

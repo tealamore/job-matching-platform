@@ -80,21 +80,24 @@ public class TestDataConfig {
           }
 
           if (jobsRepository.findAllByUser(userRepo.findByEmail(employerEmail).orElseThrow()).isEmpty()) {
+            User user = userRepo.findByEmail(employerEmail).orElseThrow();
+
             Jobs jobs = Jobs.builder()
               .description("Google's software engineers develop the next-generation technologies that change how billions of users connect, explore, and interact with information and one another. Our products need to handle information at massive scale, and extend well beyond web")
               .title("Software Engineer")
               .salary(75000.0)
-              .user(userRepo.findByEmail(employerEmail).orElseThrow())
+              .user(user)
               .build();
-            jobs = jobsRepository.saveAndFlush(jobs);
+            jobsRepository.saveAndFlush(jobs);
+
+            Jobs savedJob = jobsRepository.findAllByUser(user).get(0);
 
             List<String> tags = List.of("Python", "Java", "OSS", "Node.js");
 
-            Jobs finalJobs = jobs;
-            jobTagsRepository.saveAll(tags.stream()
+            jobTagsRepository.saveAllAndFlush(tags.stream()
               .map(it -> JobTags.builder()
                 .skillName(it)
-                .jobs(finalJobs)
+                .jobs(savedJob)
                 .build())
                 .toList());
 
@@ -102,17 +105,22 @@ public class TestDataConfig {
               .description("At Google, our philosophy is build it, break it and then rebuild it better. That thinking is at the core of how we approach testing at Google. Unlike roles with similar names at the other companies, Test Engineers at Google aren't manual testers -- you")
               .title("Software Tester")
               .salary(75000.0)
-              .user(userRepo.findByEmail(employerEmail).orElseThrow())
+              .user(user)
               .build();
-            secondJob = jobsRepository.saveAndFlush(jobs);
+            jobsRepository.saveAndFlush(secondJob);
+
+            Jobs savedSecondJob = jobsRepository.findAllByUser(user)
+              .stream()
+              .filter(it -> it.getTitle().equals("Software Tester"))
+              .findFirst()
+              .orElseThrow();
 
             tags = List.of("Python", "Java", "Selenium", "Junit");
 
-            Jobs finalSecondJob = secondJob;
-            jobTagsRepository.saveAll(tags.stream()
+            jobTagsRepository.saveAllAndFlush(tags.stream()
               .map(it -> JobTags.builder()
                 .skillName(it)
-                .jobs(finalSecondJob)
+                .jobs(savedSecondJob)
                 .build())
               .toList());
           }

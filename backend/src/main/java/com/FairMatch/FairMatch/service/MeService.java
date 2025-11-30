@@ -3,11 +3,13 @@ package com.FairMatch.FairMatch.service;
 import com.FairMatch.FairMatch.dto.request.UpdateDesiredTitlesRequest;
 import com.FairMatch.FairMatch.dto.request.UpdateMeRequest;
 import com.FairMatch.FairMatch.dto.request.UpdateSkillsRequest;
+import com.FairMatch.FairMatch.dto.response.JobsResponse;
 import com.FairMatch.FairMatch.dto.response.UserResponse;
 import com.FairMatch.FairMatch.exception.BadRequestException;
 import com.FairMatch.FairMatch.model.*;
 import com.FairMatch.FairMatch.repository.*;
 import jakarta.transaction.Transactional;
+import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,6 +27,7 @@ public class MeService {
   private final SkillsRepository skillsRepository;
   private final AuthRepository authRepository;
   private final BCryptPasswordEncoder passwordEncoder;
+  private final JobTagsRepository jobTagsRepository;
 
   @Autowired
   public MeService(UserRepository userRepository,
@@ -32,13 +35,14 @@ public class MeService {
                    JobTitlesRepository jobTitlesRepository,
                    SkillsRepository skillsRepository,
                    AuthRepository authRepository,
-                   BCryptPasswordEncoder passwordEncoder) {
+                   BCryptPasswordEncoder passwordEncoder, JobTagsRepository jobTagsRepository) {
     this.userRepository = userRepository;
     this.jobsRepository = jobsRepository;
     this.jobTitlesRepository = jobTitlesRepository;
     this.skillsRepository = skillsRepository;
     this.authRepository = authRepository;
     this.passwordEncoder = passwordEncoder;
+    this.jobTagsRepository = jobTagsRepository;
   }
 
   public UserResponse getMe(String username) {
@@ -54,15 +58,22 @@ public class MeService {
     return new UserResponse(user);
   }
 
-  public List<Jobs> getMyJobs(String username) {
+  public List<JobsResponse> getMyJobs(String username) {
     User user = userRepository.findByEmail(username)
       .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
     if (user.getUserType() == UserType.JOB_SEEKER) {
-      return jobsRepository.findAllByJobJobSeekers_User_Id(user.getId());
+      return List.of();
     }
 
-    return jobsRepository.findAllByPosterWithApplicants(user.getId());
+    return jobsRepository.findAllByPosterWithApplicants(user.getId())
+      .stream()
+      .map(it -> {
+        List<JobTags> tags = jobTagsRepository.findAllByJobsId(it.getId());
+        return new Pair<>(it, tags);
+      })
+      .map(it -> new JobsResponse(it.a, it.b))
+      .toList();
   }
 
   public UserResponse getById(UUID id) {

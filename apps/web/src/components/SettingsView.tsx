@@ -32,15 +32,14 @@ export default function SettingsView({ onBack }: { onBack: () => void }) {
     useEffect(() => {
         getMe()
             .then((data) => {
-                console.log(data);
                 setUserData(data);
                 setFormData({
                     name: data.name,
                     email: data.email,
                     phone: data.phone,
                     password: '',
-                    desiredTitles: data.desiredTitles.map((title: any) => title.title),
-                    skills: data.skills.map((skill: any) => skill.skillName)
+                    desiredTitles: data.desiredTitles?.map((title: any) => title.title) ?? [],
+                    skills: data.skills?.map((skill: any) => skill.skillName) ?? []
                 });
                 setLoading(false);
             })
