@@ -73,7 +73,7 @@ export default function LandingHero({
               onClick={onExplore}
               className="rounded-xl bg-white px-[clamp(16px,1.6vw,22px)] py-[clamp(12px,1.1vw,14px)] text-[clamp(.92rem,1.1vw,1rem)] font-semibold text-gray-900 transition hover:shadow-md active:translate-y-px"
             >
-              Get started
+              Get swiping
             </button>
             <button
               onClick={onCreate}
